@@ -1,24 +1,10 @@
 name: filee
 
 on:
-  # Check build: only when filee's own files change
-  pull_request:
-    paths:
-      - "filee.just"
-      - "filee.nfpm*"
-      - "filee/**"
-      - ".github/workflows/filee.yml"
   push:
-    branches: [main]
-    paths:
-      - "filee.just"
-      - "filee.nfpm*"
-      - "filee/**"
-      - ".github/workflows/filee.yml"
-    # Release: tag like filee-v1.1.1 (path filters are not applied to tags)
-    tags: ["filee-v*"]
-  workflow_dispatch:
-
+    tags:
+      - "filee-v*" # trigger on tag push
+      
 concurrency:
   group: filee-${{ github.ref }}
   # never cancel a running release
@@ -31,7 +17,6 @@ env:
 jobs:
   build:
     # fork PRs have no access to the signing secret
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-22.04
     permissions:
       contents: write
