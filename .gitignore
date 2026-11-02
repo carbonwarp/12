@@ -1,0 +1,9 @@
+/Containerfile
+*.iso
+*.iso-CHECKSUM
+dist
+
+*key*
+
+!cosign.pub
+!public.asc
