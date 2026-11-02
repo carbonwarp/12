@@ -28,7 +28,14 @@ jobs:
           curl -fsSL -o /tmp/nfpm.deb \
             "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_amd64.deb"
           sudo dpkg -i /tmp/nfpm.deb
-
+          
+      - name: Write signing key
+        env:
+          PRIVATE_ASC: ${{ secrets.PRIVATE_ASC }}
+        run: |
+          test -n "$PRIVATE_ASC" || { echo "secret PRIVATE_ASC is not set"; exit 1; }
+          umask 077
+          printf '%s\n' "$PRIVATE_ASC" > private.asc
 
       - name: Build
         env:
