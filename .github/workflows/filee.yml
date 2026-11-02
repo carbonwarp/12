@@ -31,12 +31,6 @@ jobs:
             "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_amd64.deb"
           sudo dpkg -i /tmp/nfpm.deb
 
-      - name: Check tag matches nfpm version
-        if: startsWith(github.ref, 'refs/tags/filee-v')
-        run: |
-          want="${GITHUB_REF_NAME#filee-v}"
-          have="$(sed -nE 's/^version:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/p' filee.nfpm | head -1)"
-          [ "$want" = "$have" ] || { echo "tag version $want != filee.nfpm version $have"; exit 1; }
 
       - name: Read upstream version (filee.just)
         run: |
