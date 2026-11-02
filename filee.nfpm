@@ -1,0 +1,49 @@
+name: cw-filee
+platform: linux
+arch: ${ARCH}
+version: 1.1.1
+maintainer: Carbonwarp
+homepage: https://carbonwarp.com
+description: Convert everything with ease with a single touch. A modified filee downstream client from Carbonwarp.
+license: MIT
+
+depends:
+  - nautilus
+  - nautilus-extensions
+  - nautilus-python
+
+contents:
+  - src: ${BIN_DIR}/
+    dst: /usr/lib/carbonwarp/filee/
+    expand: true
+    type: tree
+    
+  - src: /usr/lib/carbonwarp/filee/Filee
+    dst: /usr/bin/carbonwarp-filee
+    type: symlink
+    
+  - src: ./${EXT_FILE}
+    dst: /usr/share/nautilus-python/extensions/filee.py
+    expand: true
+    
+  - src: ./filee/settings.json/
+    dst: /usr/share/carbonwarp/filee/skel/.config/Filee/settings.json
+    
+  - src: ./filee/settings.json
+    dst: /etc/skel/.config/Filee/settings.json
+    type: config|noreplace
+    
+scripts:
+  postinstall: ./filee/post.sh
+  postremove: ./filee/post.sh
+
+rpm:
+  scripts:
+    posttrans: ./filee/post.sh
+  buildhost: milkyway
+  signature:
+    key_file: private.asc
+
+deb:
+  signature:
+    key_file: private.asc

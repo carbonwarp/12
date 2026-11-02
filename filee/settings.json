@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 54,
+  "language": "auto",
+  "startWithSystem": false,
+  "contextMenuEnabled": false,
+  "checkForUpdates": false,
+  "closeAction": "Quit",
+  "keepHistory": false,
+  "historyLimit": 200,
+  "showInDock": true,
+  "showMenuBarIcon": true,
+  "whatsNewSeenVersion": "2.2.0",
+  "notifiedEngineVersions": {},
+  "paused": false,
+  "theme": {
+    "style": "MaterialYou",
+    "mode": "System",
+    "accent": "#7F77DD",
+    "cornerRadius": 7
+  },
+  "donut": {
+    "outerRadius": 150,
+    "holeRatio": 0.42,
+    "opacity": 1,
+    "flipKey": "Tab",
+    "flipWithWheel": true
+  },
+  "triggers": [
+    {
+      "id": "a12034d6",
+      "enabled": true,
+      "kind": "Drag",
+      "modifiers": "Ctrl",
+      "button": "Left",
+      "dragThreshold": 0,
+      "holdMilliseconds": 450,
+      "scope": "FileManager"
+    },
+    {
+      "id": "1d712e65",
+      "enabled": true,
+      "kind": "KeyChord",
+      "modifiers": "Ctrl, Alt",
+      "button": "None",
+      "key": "Space",
+      "dragThreshold": 0,
+      "holdMilliseconds": 450,
+      "scope": "FileManager"
+    }
+  ],
+  "excludedProcesses": [],
+  "enginePriority": [
+    "magick",
+    "pdfium",
+    "pdfsharp",
+    "rhwp",
+    "unhwp",
+    "markdown",
+    "spreadsheet",
+    "ooxml",
+    "hwpx-writer",
+    "docx-writer",
+    "pdf-text",
+    "pdf-slides",
+    "email",
+    "data",
+    "vector",
+    "icns",
+    "font",
+    "cad",
+    "model3d",
+    "geo",
+    "archive",
+    "ebook",
+    "subtitle",
+    "wic",
+    "ffmpeg",
+    "pandoc",
+    "ghostscript",
+    "calibre",
+    "libreoffice"
+  ],
+  "firstRunCompleted": true,
+  "successfulConversions": 3,
+  "feedbackPromptShown": true,
+  "accessibilityPromptShown": false,
+  "watchFolders": [],
+  "defaultOutput": {
+    "location": "SameFolder",
+    "subfolderName": "converted",
+    "customFolder": ""
+  },
+  "browserDrops": {
+    "folder": "",
+    "saveOnlyConverted": false
+  },
+  "engineOwnCopies": {},
+  "libreOfficeForSlides": true,
+  "libreOfficeForHwp": false,
+  "libreOfficeForDocuments": false,
+  "libreOfficeForSheets": false,
+  "keepFileDates": false,
+  "zipGeoResults": false,
+  "uiScale": 1,
+  "mainWindow": {
+    "x": 200,
+    "y": 200,
+    "width": 1221,
+    "height": 600,
+    "maximized": false
+  }
+}
