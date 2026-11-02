@@ -1,0 +1,26 @@
+[Desktop Entry]
+Type=Application
+Name=Software
+Comment=Software Store for Carbonwarp
+Exec=cw-software
+Icon=cw-software
+Terminal=false
+StartupNotify=true
+StartupWMClass=com.carbonwarp.software
+Categories=System;PackageManager;GTK;
+Keywords=store;apps;software;flatpak;flathub;rpm;ostree;update;install;
+Actions=Installed;UpdateAll;SystemUpdate;
+
+[Desktop Action Installed]
+Name=Installed apps
+Exec=cw-software installed
+
+[Desktop Action UpdateAll]
+Name=Update everything
+Exec=cw-software update all
+
+[Desktop Action SystemUpdate]
+Name=Update system
+Exec=cw-software system update
+
+

@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+
+name: cw-software
+arch: all
+platform: linux
+version: 5.0.0
+release: 1
+
+maintainer: Carbonwarp <support@carbonwarp.com>
+vendor: Carbonwarp
+homepage: https://github.com/carbonwarp/cw-software
+license: MIT
+description: Software store for atomic operating systems.
+
+depends:
+  - python3
+  - python3-gobject
+  - gtk4
+  - libadwaita
+  - flatpak
+  - dnf
+  - rpm-ostree
+  - rpm
+  - systemd
+  - zstd
+  - gzip
+  - xz
+  - bzip2
+  
+contents:
+  - src: cw-software/src/
+    dst: /usr/lib/
+    type: tree
+
+  - src: cw-software/packaging/bin/
+    dst: /usr/bin/
+    type: tree
+
+  - src: cw-software/data/com.carbonwarp.software.desktop
+    dst: /usr/share/applications/com.carbonwarp.software.desktop
+    file_info:
+      mode: 0644
+
+  - src: cw-software/packaging/software.svg
+    dst: /usr/share/icons/hicolor/scalable/apps/cw-software.svg
+    file_info:
+      mode: 0644
+ 
+scripts:
+  preinstall: cw-software/packaging/preinst.sh
+  postinstall: cw-software/packaging/postinst.sh
+
+rpm:
+  buildhost: milkyway
+  signature:
+    key_file: private.asc
+
