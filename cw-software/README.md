@@ -43,26 +43,3 @@ You can also use the direct package URL:
 ```text
 https://dl.carbonwarp.com/cw-software.rpm
 ```
-
-## Build from Source
-
-> Required: nfpm & An ASCII-armored GPG private key named `private.asc` at the repository root
-
-### Build and Install
-
-```bash
-git clone https://github.com/carbonwarp/cw-software.git --depth 1
-cd cw-software
-make VERSION="1.4.3"
-rpm-ostree install dist/*.rpm
-```
-
-## Contributing
-
-Contributions are welcome. Both contributors and reviewers are expected to manually review changes before they are accepted.
-
-By contributing to this project, you agree to license your contributions under the MIT License.
-
-## License
-
-CW Software is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
