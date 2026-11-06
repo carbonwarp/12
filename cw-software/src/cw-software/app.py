@@ -18,7 +18,7 @@ from .runner import Runner, capture
 from .storefront import Promo
 
 APP_ID = "com.carbonwarp.software"
-VERSION = "0.5.1"
+VERSION = "100.0.0"
 PAGE = 36             # tiles rendered per batch
 MAX_COLS = 3          # at most three tiles per row
 MIN_TILE = 240        # lower bound for a tile; the real minimum is measured at runtime
