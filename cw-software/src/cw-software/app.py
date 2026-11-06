@@ -15,11 +15,12 @@ from . import catalog, flatpak, model, rpmostree, screenshots
 from .config import Config
 from .model import AppEntry
 from .runner import Runner, capture
+from .storefront import Promo
 
 APP_ID = "com.carbonwarp.software"
 VERSION = "0.5.1"
 PAGE = 36             # tiles rendered per batch
-MAX_COLS = 4          # at most four tiles per row
+MAX_COLS = 3          # at most three tiles per row
 MIN_TILE = 240        # lower bound for a tile; the real minimum is measured at runtime
 GAP = 12
 LIST_MARGIN = 16      # side margin of the tile grid
@@ -31,25 +32,58 @@ SCHEMES = {
     "dark": Adw.ColorScheme.FORCE_DARK,
 }
 SECTION_TITLES = {0: "Applications", 1: "Command-line tools", 2: "Other RPM packages"}
-PREVIEW = 12          # tiles per store section before "Show all" (12 fills 1-4 column rows)
+PREVIEW = 12          # tiles per store section before "Show all" (12 fills 1-3 column rows)
 CSS = b"""
-.chip { border-radius: 999px; padding: 2px 16px; min-height: 30px; }
-.store-action { border-radius: 999px; padding: 2px 12px; min-height: 30px; }
-.tag { border-radius: 6px; padding: 1px 8px; font-size: 0.8em; font-weight: bold;
-       background: alpha(currentColor, 0.1); }
-.tag-rpm { color: @accent_color;}
-.tag-flathub { color: @accent_color;}
-.tag-reboot { color: @warning_color; background: alpha(@warning_color, 0.18); }
-.tag-uptodate {
-    color: @success_color;
-    padding: 1px 8px;
-    border-radius: 6px;
-    font-size: 0.8em;
-    font-weight: bold;
-}
-.app-card { padding: 14px; }
-.tile-summary { min-height: 2.6em; }
-.screenshot { border-radius: 10px; }
+.store-toolbar { padding-top: 22px; padding-bottom: 10px; }
+.navigation-sidebar { padding: 10px 6px; background: @view_bg_color; border-right: 1px solid alpha(currentColor, 0.10); }
+.navigation-sidebar-title { padding: 10px 10px 4px; color: alpha(currentColor, 0.58); font-size: 0.76em; font-weight: 700; }
+.navigation-sidebar button { min-height: 38px; border-radius: 9px; }
+.navigation-sidebar button:checked { background: alpha(@accent_bg_color, 0.16); color: @accent_color; }
+.operation-status { padding: 9px 14px; background: @headerbar_bg_color; border-bottom: 1px solid alpha(currentColor, 0.10); }
+.operation-progress { min-width: 180px; }
+.operation-progress trough { min-height: 6px; border-radius: 999px; }
+.operation-progress progress { min-height: 6px; border-radius: 999px; }
+.store-heading { font-size: 2.15em; font-weight: 750; letter-spacing: -0.035em; }
+.store-subheading { color: alpha(currentColor, 0.66); font-size: 1.02em; }
+.store-search { min-height: 42px; border-radius: 13px; }
+.store-filters { padding-top: 2px; }
+.chip { border-radius: 999px; padding: 3px 17px; min-height: 32px; }
+.chip:checked { background: alpha(@accent_bg_color, 0.16); color: @accent_color; }
+.store-action { border-radius: 999px; padding: 3px 14px; min-height: 32px; font-weight: 650; }
+.tag { border-radius: 100px; padding: 2px 9px; font-size: 0.76em; font-weight: 650;
+       background: alpha(currentColor, 0.085); }
+.tag-rpm { color: @accent_color; background: alpha(@accent_bg_color, 0.13); }
+.tag-flathub { color: @accent_color; background: alpha(@accent_bg_color, 0.13); }
+.tag-reboot { color: @warning_color; background: alpha(@warning_color, 0.15); }
+.tag-uptodate { color: @success_color; padding: 2px 9px; border-radius: 999px;
+                font-size: 0.78em; font-weight: 650; background: alpha(@success_color, 0.10); }
+.app-card { padding: 17px; border-radius: 16px; border: 1px solid alpha(currentColor, 0.09);
+            background: @card_bg_color; transition: border-color 160ms ease, background-color 160ms ease; }
+.app-card:hover { border-color: alpha(@accent_color, 0.42); background: alpha(@card_bg_color, 0.78); }
+.app-icon-well { min-width: 68px; min-height: 68px; border-radius: 17px;
+                 background: alpha(currentColor, 0.045); padding: 6px; }
+.app-title { font-size: 1.02em; font-weight: 700; }
+.tile-summary { min-height: 2.6em; line-height: 1.35; }
+.store-section { margin-top: 18px; margin-bottom: 3px; }
+.store-section-title { font-size: 1.45em; font-weight: 750; letter-spacing: -0.02em; }
+.screenshot { border-radius: 14px; }
+.details-hero { padding: 4px 0; }
+.details-icon-well { min-width: 112px; min-height: 112px; border-radius: 26px; padding: 8px;
+                     background: alpha(currentColor, 0.045); }
+.details-title { font-size: 2em; font-weight: 800; letter-spacing: -0.03em; }
+.facts-strip { border-top: 1px solid alpha(currentColor, 0.10);
+               border-bottom: 1px solid alpha(currentColor, 0.10); padding: 12px 0; }
+.fact-title { font-size: 0.7em; font-weight: 700; letter-spacing: 0.06em;
+              color: alpha(currentColor, 0.58); }
+.fact-value { font-weight: 700; font-size: 1.05em; }
+.details-description { font-size: 1.02em; line-height: 1.5; }
+.info-row { padding: 11px 0; border-bottom: 1px solid alpha(currentColor, 0.10); }
+button.store-pill, menubutton.store-pill > button {
+    background: @accent_bg_color; color: @accent_fg_color; border-radius: 999px;
+    padding: 5px 28px; min-height: 34px; font-weight: 700; box-shadow: none; }
+button.store-pill-tonal, menubutton.store-pill-tonal > button {
+    background: alpha(@error_color, 0.12); color: @error_color; border-radius: 999px;
+    padding: 5px 24px; min-height: 34px; font-weight: 700; box-shadow: none; }
 .install-action, .open-action { color: @accent_color; }
 .uninstall-action { color: @error_color; }
 """
@@ -288,7 +322,8 @@ def up_to_date_label(tooltip=None):
 
 
 def make_action(options, label, accent=False, big=False):
-    """Compact chip-like action; multiple choices are shown in a popover."""
+    """Compact chip-like action (or an App-Store style pill when big=True);
+    multiple choices are shown in a popover."""
     if len(options) == 1:
         text, fn = options[0]
         btn = Gtk.Button(label=label, valign=Gtk.Align.CENTER, tooltip_text=text)
@@ -304,6 +339,9 @@ def make_action(options, label, accent=False, big=False):
         pop.set_child(box)
         btn = Gtk.MenuButton(label=label, popover=pop, valign=Gtk.Align.CENTER,
                              always_show_arrow=True)
+    if big:
+        btn.add_css_class("store-pill-tonal" if label == "Uninstall" else "store-pill")
+        return btn
     btn.add_css_class("flat")
     btn.add_css_class("store-action")
     if label == "Install":
@@ -395,39 +433,77 @@ RPM_STATE_TEXT = {
 
 
 class Details(Gtk.Box):
-    """Description and metadata of an app page. Flathub metadata is preferred when the app
-    exists as both Flathub and RPM."""
+    """Description and information of an app page. Flathub metadata is preferred when the
+    app exists as both Flathub and RPM. on_loaded(values) receives the collected facts."""
 
-    def __init__(self, win, entry):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        self.win, self.e = win, entry
-        self.info_rows = []
-        self.has_desc = False
+    def __init__(self, win, entry, on_loaded=None):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.win, self.e, self.on_loaded = win, entry, on_loaded
+        self.values, self.info_rows = {}, []
+        self.has_desc, self.expanded = False, False
 
-        about = Gtk.Label(label="About", xalign=0)
-        about.add_css_class("title-4")
-        self.desc = Gtk.Label(label="Loading details…", wrap=True, xalign=0, selectable=True)
-        self.info_group = Adw.PreferencesGroup(title="Details")
-        self.info_group.set_visible(False)
-        for w in (about, self.desc, self.info_group):
-            self.append(w)
+        self.desc = Gtk.Label(label="Loading details…", wrap=True, xalign=0, yalign=0,
+                              lines=6, ellipsize=Pango.EllipsizeMode.END)
+        self.desc.add_css_class("details-description")
+        self.more = Gtk.Button(label="more", halign=Gtk.Align.END, visible=False)
+        self.more.add_css_class("flat")
+        self.more.connect("clicked", self._toggle_more)
+        desc_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        desc_box.append(self.desc)
+        desc_box.append(self.more)
+
+        self.info_section = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        heading = Gtk.Label(label="Information", xalign=0)
+        heading.add_css_class("title-3")
+        self.info_list = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.info_section.append(heading)
+        self.info_section.append(self.info_list)
+        self.info_section.set_visible(False)
+
+        self.append(desc_box)
+        self.append(self.info_section)
         self._load()
 
     def _set_desc(self, text):
         self.has_desc = bool(text)
         self.desc.set_label(text or "No description available.")
+        self.more.set_visible(len(text or "") > 300)
+
+    def _toggle_more(self, _b):
+        self.expanded = not self.expanded
+        self.desc.set_lines(-1 if self.expanded else 6)
+        self.desc.set_ellipsize(Pango.EllipsizeMode.NONE if self.expanded
+                                else Pango.EllipsizeMode.END)
+        self.more.set_label("less" if self.expanded else "more")
 
     def _add_info(self, title, value, link=False):
         if not value:
             return
-        row = Adw.ActionRow(title=title, subtitle=value, use_markup=False, subtitle_selectable=True)
+        self.values[title] = value
+        row = Gtk.Box(spacing=16)
+        row.add_css_class("info-row")
+        key = Gtk.Label(label=title, xalign=0, valign=Gtk.Align.START)
+        key.add_css_class("dim-label")
+        key.set_size_request(120, -1)
+        val = Gtk.Label(label=value, xalign=1, justify=Gtk.Justification.RIGHT, hexpand=True,
+                        wrap=True, wrap_mode=Pango.WrapMode.WORD_CHAR)
         if link:
-            row.set_activatable(True)
-            row.add_suffix(Gtk.Image(icon_name="adw-external-link-symbolic"))
-            row.connect("activated", lambda _r: open_url(self.win, value))
-        self.info_group.add(row)
+            val.add_css_class("accent")
+            val.set_cursor_from_name("pointer")
+            click = Gtk.GestureClick()
+            click.connect("released", lambda *_: open_url(self.win, value))
+            val.add_controller(click)
+        else:
+            val.set_selectable(True)
+        row.append(key)
+        row.append(val)
+        self.info_list.append(row)
         self.info_rows.append(row)
-        self.info_group.set_visible(True)
+        self.info_section.set_visible(True)
+
+    def _notify(self):
+        if self.on_loaded:
+            self.on_loaded(self.values)
 
     def _load(self):
         e, win = self.e, self.win
@@ -460,6 +536,7 @@ class Details(Gtk.Box):
         self._add_info("Website", (meta.get("urls") or {}).get("homepage", ""), link=True)
         self._add_info("Source", f"Flathub · {self.win.config['remote']}")
         self._add_info("App ID", e.flatpak_id)
+        self._notify()
         if not self.has_desc:
             if e.rpm_pkg and self.win.rpm_enabled:
                 self._load_rpm()  # description fallback only
@@ -491,6 +568,7 @@ class Details(Gtk.Box):
         self._add_info("Website", info.get("url", ""), link=True)
         self._add_info("Source", "RPM · rpm-ostree")
         self._add_info("Package", e.rpm_pkg)
+        self._notify()
 
 
 def update_options(win, e):
@@ -534,7 +612,8 @@ def fill_state(win, e, tags, slot, installed_view=False, big=False):
         if status == "update":
             slot.append(make_action(update_options(win, e), "Update", accent=True, big=big))
         elif status == "current":
-            slot.append(up_to_date_label(
+            # Left of the Flathub / RPM tags, not on the action side.
+            tags.prepend(up_to_date_label(
                 "Part of the system image; updated from the System tab"
                 if e.rpm_state == "base" and not e.flatpak_installed else None))
         else:
@@ -569,7 +648,7 @@ class Card(Gtk.Box):
                        valign=Gtk.Align.CENTER)
         title = Gtk.Label(label=entry.name, xalign=0, ellipsize=Pango.EllipsizeMode.END,
                           max_width_chars=1, hexpand=True)
-        title.add_css_class("heading")
+        title.add_css_class("app-title")
         summary = Gtk.Label(label=entry.summary or (entry.rpm_pkg or entry.flatpak_id or ""),
                             xalign=0, yalign=0, wrap=True, lines=2, max_width_chars=1,
                             ellipsize=Pango.EllipsizeMode.END)
@@ -578,7 +657,11 @@ class Card(Gtk.Box):
         summary.add_css_class("tile-summary")
         text.append(title)
         text.append(summary)
-        top.append(make_icon(win, entry, 56))
+        icon_well = Gtk.Box(halign=Gtk.Align.START, valign=Gtk.Align.CENTER,
+                            homogeneous=True)
+        icon_well.add_css_class("app-icon-well")
+        icon_well.append(make_icon(win, entry, 52))
+        top.append(icon_well)
         top.append(text)
 
         bottom = Gtk.Box(spacing=6)
@@ -623,31 +706,48 @@ def make_carousel(paths, height=280):
 
 
 class DetailsPage(Adw.NavigationPage):
+    """App page in the style of an app-store product page: hero with pill buttons,
+    a facts strip, screenshot preview, description and an information list."""
 
     def __init__(self, win, entry):
         super().__init__(title=entry.name, tag="details")
         self.win, self.e = win, entry
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16, margin_top=12,
-                      margin_bottom=16, margin_start=16, margin_end=16)
-        head = Gtk.Box(spacing=20)
-        icon = make_icon(win, entry, 96)
-        icon.set_valign(Gtk.Align.START)
-        side = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, hexpand=True)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=22, margin_top=18,
+                      margin_bottom=28, margin_start=20, margin_end=20)
+
+        # Hero: big rounded icon, name, subtitle, pill buttons.
+        head = Gtk.Box(spacing=24)
+        head.add_css_class("details-hero")
+        well = Gtk.Box(halign=Gtk.Align.START, valign=Gtk.Align.START, homogeneous=True)
+        well.add_css_class("details-icon-well")
+        well.append(make_icon(win, entry, 96))
+        side = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4, hexpand=True,
+                       valign=Gtk.Align.CENTER)
         title = Gtk.Label(label=entry.name, xalign=0, wrap=True)
-        title.add_css_class("title-1")
-        subtitle = Gtk.Label(label=entry.summary, xalign=0, wrap=True)
+        title.add_css_class("details-title")
+        subtitle = Gtk.Label(label=entry.summary or "", xalign=0, wrap=True)
         subtitle.add_css_class("dim-label")
-        self.variants = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, margin_top=4)
-        for w in (title, subtitle, self.variants):
+        self.actions = Gtk.Box(spacing=8, margin_top=10)
+        self.variants = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, margin_top=8)
+        for w in (title, subtitle, self.actions, self.variants):
             side.append(w)
-        head.append(icon)
+        head.append(well)
         head.append(side)
+
+        # Facts strip (filled once details are loaded). Created before Details,
+        # which may report back synchronously.
+        self.facts = Gtk.Box(spacing=12, hexpand=True)
+        self.facts_scroll = Gtk.ScrolledWindow(
+            hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+            vscrollbar_policy=Gtk.PolicyType.NEVER,
+            propagate_natural_height=True, visible=False, child=self.facts)
+        self.facts_scroll.add_css_class("facts-strip")
 
         self.shots = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.shots.set_visible(False)
-        self.body = Details(win, entry)
-        for w in (head, self.shots, self.body):
+        self.body = Details(win, entry, on_loaded=self._facts_loaded)
+        for w in (head, self.facts_scroll, self.shots, self.body):
             box.append(w)
 
         # EXTERNAL: the page content never sets the window's minimum width.
@@ -660,7 +760,37 @@ class DetailsPage(Adw.NavigationPage):
         self.update()
         self._load_shots()
 
-    def _variant(self, src):
+    # ----- facts strip -----
+    def _fact(self, title, value):
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3, hexpand=True,
+                      margin_start=8, margin_end=8)
+        t = Gtk.Label(label=title.upper())
+        t.add_css_class("fact-title")
+        v = Gtk.Label(label=value, ellipsize=Pango.EllipsizeMode.END, max_width_chars=18,
+                      tooltip_text=value)
+        v.add_css_class("fact-value")
+        col.append(t)
+        col.append(v)
+        return col
+
+    def _facts_loaded(self, values):
+        clear_box(self.facts)
+        picks = []
+        for label, key in (("Developer", "Developer"), ("Version", "Version"),
+                           ("Size", "Download size"), ("Size", "Size"),
+                           ("Source", "Source")):
+            value = values.get(key)
+            if value and label not in [p[0] for p in picks]:
+                picks.append((label, value.split(" · ")[0]))
+        picks = picks[:4]
+        for i, (label, value) in enumerate(picks):
+            if i:
+                self.facts.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,
+                                                margin_top=4, margin_bottom=4))
+            self.facts.append(self._fact(label, value))
+        self.facts_scroll.set_visible(bool(picks))
+
+    def _variant(self, src, lead=None):
         e = self.e
         if src == "flathub":
             installed = e.flatpak_installed
@@ -677,40 +807,46 @@ class DetailsPage(Adw.NavigationPage):
         lbl = Gtk.Label(label=sub, xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
         lbl.add_css_class("dim-label")
         lbl.add_css_class("caption")
+        if lead is not None:
+            row.append(lead)
         row.append(chip)
         row.append(lbl)
         return row
 
     def update(self):
         clear_box(self.variants)
+        clear_box(self.actions)
         e, win = self.e, self.win
-        if e.flatpak_id:
-            self.variants.append(self._variant("flathub"))
-        if e.rpm_pkg and win.rpm_enabled:
-            self.variants.append(self._variant("rpm"))
-        if e.rpm_staged or e.rpm_state in ("pending-install", "pending-removal"):
-            self.variants.append(tag("Reboot required", "tag-reboot"))
-
-        actions = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8,
-                          margin_top=4, hexpand=True)
-        actions.set_valign(Gtk.Align.CENTER)
         installed = (model.installed(e) or e.flatpak_installed
                      or e.rpm_state in model.INSTALLED_RPM)
-        if installed:
-            status = win.update_status(e)
-            if status == "update":
-                actions.append(make_action(update_options(win, e), "Update"))
-            elif status == "current":
-                current = up_to_date_label(
-                    "Part of the system image; updated from the System tab"
-                    if e.rpm_state == "base" and not e.flatpak_installed else None)
-                current.set_halign(Gtk.Align.START)
-                actions.append(current)
-            else:
-                actions.append(dim_label(
-                    "Checking…" if win.checking_updates else "Update status unknown"))
+        status = win.update_status(e) if installed else None
+        lead = None
+        if status == "current":
+            lead = up_to_date_label(
+                "Part of the system image; updated from the System tab"
+                if e.rpm_state == "base" and not e.flatpak_installed else None)
+            lead.set_valign(Gtk.Align.CENTER)
+        if e.flatpak_id:
+            self.variants.append(self._variant("flathub", lead))
+            lead = None
+        if e.rpm_pkg and win.rpm_enabled:
+            self.variants.append(self._variant("rpm", lead))
+            lead = None
+        if e.rpm_staged or e.rpm_state in ("pending-install", "pending-removal"):
+            reboot = tag("Reboot required", "tag-reboot")
+            reboot.set_halign(Gtk.Align.START)
+            self.variants.append(reboot)
 
-            actions.append(Gtk.Box(hexpand=True))
+        if installed:
+            open_btn = Gtk.Button(label="Open", valign=Gtk.Align.CENTER)
+            open_btn.add_css_class("store-pill")
+            open_btn.connect("clicked", lambda _b: launch_installed(self.win, self.e))
+            self.actions.append(open_btn)
+
+            if status == "update":
+                opts = update_options(win, e)
+                if opts:
+                    self.actions.append(make_action(opts, "Update", big=True))
             remove_options = []
             if e.flatpak_installed:
                 remove_options.append(("Uninstall from Flathub",
@@ -719,16 +855,14 @@ class DetailsPage(Adw.NavigationPage):
                 remove_options.append(("Uninstall RPM (reboot required)",
                                        lambda: win.act(e, "uninstall", "rpm")))
             if remove_options:
-                actions.append(make_action(remove_options, "Uninstall"))
+                self.actions.append(make_action(remove_options, "Uninstall", big=True))
 
-            open_btn = Gtk.Button(label="Open", valign=Gtk.Align.CENTER)
-            open_btn.add_css_class("flat")
-            open_btn.add_css_class("store-action")
-            open_btn.add_css_class("open-action")
-            open_btn.connect("clicked", lambda _b: launch_installed(self.win, self.e))
-            actions.append(open_btn)
+            if lead is not None:      # no source row to host it: keep it visible anyway
+                self.actions.prepend(lead)
+            elif status not in ("current", "update"):
+                self.actions.append(dim_label(
+                    "Checking…" if win.checking_updates else "Update status unknown"))
         else:
-            actions.append(Gtk.Box(hexpand=True))
             install_options = []
             if e.flatpak_id:
                 install_options.append(("Flathub", lambda: win.act(e, "install", "flatpak")))
@@ -736,9 +870,7 @@ class DetailsPage(Adw.NavigationPage):
                 install_options.append(("RPM · reboot required",
                                         lambda: win.act(e, "install", "rpm")))
             if install_options:
-                actions.append(make_action(install_options, "Install"))
-        if actions.get_first_child():
-            self.variants.append(actions)
+                self.actions.append(make_action(install_options, "Install", big=True))
 
     # screenshots (AppStream; cached, refreshed only from the menu)
     def _load_shots(self):
@@ -758,12 +890,12 @@ class DetailsPage(Adw.NavigationPage):
     def _got_shots(self, label, paths, nsources):
         if isinstance(paths, Exception) or not paths:
             return
-        carousel = make_carousel(paths)
+        carousel = make_carousel(paths, 320)
         if carousel is None:
             return
         if not self.shots.get_visible():
-            head = Gtk.Label(label="Screenshots", xalign=0)
-            head.add_css_class("title-4")
+            head = Gtk.Label(label="Preview", xalign=0)
+            head.add_css_class("title-3")
             self.shots.append(head)
             self.shots.set_visible(True)
         if nsources > 1:   # app exists as Flathub and RPM: show both
@@ -794,6 +926,7 @@ class Feed(Gtk.Box):
         self._disc_src = 0
         self._sec, self._mixed = None, False
         self.grouped = False         # store sections (Productivity, Gaming, ...) when not searching
+        self.selected_group = None   # optional category selected from the navigation sidebar
         self.expanded = set()        # store sections the user opened with "Show all"
         self.counts = {}             # entries per store section (before the preview cut)
 
@@ -814,6 +947,16 @@ class Feed(Gtk.Box):
 
         head = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=12,
                        margin_bottom=6, margin_start=LIST_MARGIN, margin_end=LIST_MARGIN)
+        head.add_css_class("store-toolbar")
+        heading = Gtk.Label(label="Discover", xalign=0)
+        self.heading = heading
+        heading.add_css_class("store-heading")
+        subtitle = Gtk.Label(label="Find your next favorite app.", xalign=0)
+        subtitle.add_css_class("store-subheading")
+        self.entry.add_css_class("store-search")
+        chips.add_css_class("store-filters")
+        head.append(heading)
+        head.append(subtitle)
         head.append(self.entry)
         head.append(chips)
         self.append(head)
@@ -822,8 +965,16 @@ class Feed(Gtk.Box):
                              hexpand=True, valign=Gtk.Align.START, margin_top=6,
                              margin_bottom=LIST_MARGIN, margin_start=LIST_MARGIN,
                              margin_end=LIST_MARGIN)
+        # Recommended banner (feed integration) sits above the grid on the unified tab.
+        self.promo = None
+        column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        if mode == "all":
+            self.promo = Promo(win, win.promo_icon, win.open_feed_item)
+            self.promo.set_visible(False)
+            column.append(self.promo)
+        column.append(self.grid)
         clamp = Adw.Clamp(maximum_size=MAX_CONTENT, tightening_threshold=MAX_CONTENT,
-                          child=self.grid)
+                          child=column)
         self.scroller = Gtk.ScrolledWindow(hscrollbar_policy=Gtk.PolicyType.EXTERNAL,
                                            propagate_natural_width=False, child=clamp)
         self.scroller.connect("edge-reached", self._on_edge)
@@ -907,11 +1058,22 @@ class Feed(Gtk.Box):
             return bool(e.rpm_pkg)
         return True
 
+    def _update_promo(self):
+        """Recommendations show only on the plain, unfiltered Apps view."""
+        if self.promo is None:
+            return
+        show = (not self.term.strip() and not self.installed_only
+                and self.selected_group is None)
+        self.promo.set_visible(show)
+        if show:
+            self.promo.rebuild()
+
     def refilter(self, soft=False):
         """Rebuild the list. soft=True keeps the tiles (and scroll position) if nothing changed."""
         win = self.win
         if not win.catalog_ready:
             return
+        self._update_promo()
         base = [e for e in win.entries if self._in_mode(e)]
         if self.term.strip():
             base += [e for e in self.extra if self._in_mode(e)]
@@ -919,6 +1081,12 @@ class Feed(Gtk.Box):
             base = [e for e in base if model.installed(e)]
         self.grouped = not self.term.strip()
         results = model.by_section(model.search(base, self.term), self.grouped)
+        if self.selected_group is not None:
+            results = [e for e in results
+                       if model.section(e) == 0 and e.group == self.selected_group]
+            self.heading.set_label(model.GROUPS[self.selected_group])
+        else:
+            self.heading.set_label("Discover")
         # Keep the existing section/group order; within each group show real icons first.
         icon_status = {id(e): _has_real_icon(win, e) for e in results}
         results.sort(key=lambda e: (
@@ -983,9 +1151,10 @@ class Feed(Gtk.Box):
         """Section title; store sections with more than PREVIEW apps get a Show all / Show less."""
         sec, grp = key
         title = SECTION_TITLES[sec] if sec or not self.grouped else model.GROUPS[grp]
-        hdr = Gtk.Box(spacing=8, margin_top=8)
+        hdr = Gtk.Box(spacing=8, margin_top=18, margin_bottom=4)
+        hdr.add_css_class("store-section")
         label = Gtk.Label(label=title, xalign=0, hexpand=True)
-        label.add_css_class("title-4")
+        label.add_css_class("store-section-title")
         hdr.append(label)
         total = self.counts.get(key, 0)
         if self.grouped and not sec and total > PREVIEW:
@@ -1072,8 +1241,8 @@ class SystemPage(Gtk.ScrolledWindow):
                       margin_bottom=16, margin_start=12, margin_end=12)
         self.set_child(Adw.Clamp(maximum_size=640, child=box))
 
-        # Compact GNOME Settings-style header: OS identity on the left, icon-only
-        # distribution logo on the right, followed by hardware details.
+        # Compact GNOME Settings-style header: distribution logo on the left,
+        # OS identity on the right, followed by hardware details.
         release = self._os_release()
         os_name = release.get("PRETTY_NAME") or release.get("NAME", "Linux")
         os_name = re.sub(r"\s*\((?:Silverblue)\)", "", os_name, flags=re.IGNORECASE).strip()
@@ -1082,7 +1251,7 @@ class SystemPage(Gtk.ScrolledWindow):
         os_version = win.info.get("booted_version") or release.get("VERSION_ID") \
             or release.get("VERSION", "")
 
-        identity = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16,
+        identity = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=20,
                            margin_top=2, margin_bottom=4)
         identity_text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3, hexpand=True,
                                 valign=Gtk.Align.CENTER)
@@ -1096,10 +1265,10 @@ class SystemPage(Gtk.ScrolledWindow):
         self.os_logo = self._make_os_logo(release)
         self.os_logo.set_pixel_size(112)
         self.os_logo.set_size_request(112, 112)
-        self.os_logo.set_halign(Gtk.Align.END)
+        self.os_logo.set_halign(Gtk.Align.START)
         self.os_logo.set_valign(Gtk.Align.CENTER)
-        identity.append(identity_text)
-        identity.append(self.os_logo)
+        identity.append(self.os_logo)      # logo on the left
+        identity.append(identity_text)     # OS name and version on the right
         box.append(identity)
 
         about_group = Adw.PreferencesGroup()
@@ -1406,7 +1575,7 @@ class StoreWindow(Adw.ApplicationWindow):
                                                       Feed(self, "rpm"))
         self.feeds = [self.feed_all, self.feed_fp, self.feed_rpm]
         self.system_page = SystemPage(self)
-        self.stack = Adw.ViewStack(vexpand=True)
+        self.stack = Adw.ViewStack(vexpand=True, hexpand=True)
         self.stack.set_hhomogeneous(False)      # a wide page must not widen the others
         self.stack.add_titled_with_icon(self.feed_all, "all", "Apps", "view-grid-symbolic")
         self.stack.add_titled_with_icon(self.feed_fp, "flathub", "Flathub", "package-x-generic-symbolic")
@@ -1414,16 +1583,21 @@ class StoreWindow(Adw.ApplicationWindow):
         self.stack.add_titled_with_icon(self.system_page, "system", "System",
                                         "emblem-system-symbolic")
 
-        # Header: view switcher; on narrow windows a title in the header and the switcher
-        # moves to a bottom bar (see _setup_narrow_mode).
+        # Header: retain the native Adwaita header bar. The sidebar toggle sits on the
+        # left; the sidebar itself slides in over the content from the left edge.
         self.header = Adw.HeaderBar()
+        self.sidebar_toggle = Gtk.ToggleButton()
+        self.sidebar_toggle.set_child(Gtk.Image.new_from_icon_name("sidebar-show-symbolic"))
+        self.sidebar_toggle.set_tooltip_text("Show or hide navigation")
+        self.sidebar_toggle.add_css_class("flat")
+        self.sidebar_toggle.connect("toggled", self._toggle_sidebar)
+        self.header.pack_start(self.sidebar_toggle)
         self.switcher = Adw.ViewSwitcher(stack=self.stack, policy=Adw.ViewSwitcherPolicy.WIDE)
         self.window_title = Adw.WindowTitle(title="Software", subtitle="")
-        self.window_title.set_visible(False)
-        title_box = Gtk.Box(halign=Gtk.Align.CENTER)
-        title_box.append(self.switcher)
-        title_box.append(self.window_title)
-        self.header.set_title_widget(title_box)
+        self.window_title.set_visible(True)
+        # Navigation is handled by the slide-in sidebar, not duplicated in the header.
+        self.switcher.set_visible(False)
+        self.header.set_title_widget(self.window_title)
         self.header.pack_end(self._build_menu_button())
         self.spinner = Gtk.Spinner()
         self.header.pack_end(self.spinner)
@@ -1437,30 +1611,68 @@ class StoreWindow(Adw.ApplicationWindow):
                                          ellipsize=Pango.EllipsizeMode.END)
         self.operation_label.add_css_class("dim-label")
         self.operation_label.add_css_class("caption")
-        self.operation_progress = Gtk.ProgressBar(show_text=True, valign=Gtk.Align.CENTER)
-        self.operation_progress.set_size_request(140, -1)
-        self.operation_progress.set_pulse_step(0.08)
+        self.operation_progress = Gtk.ProgressBar(show_text=False, valign=Gtk.Align.CENTER)
+        self.operation_progress.set_size_request(180, -1)
+        self.operation_progress.set_pulse_step(0.12)
+        self.operation_status.add_css_class("operation-status")
+        self.operation_progress.add_css_class("operation-progress")
         self.operation_status.append(self.operation_label)
         self.operation_status.append(self.operation_progress)
-        self.operation_status.set_visible(False)
+        self.operation_status.set_visible(True)
+        self.operation_status_revealer = Gtk.Revealer(
+            child=self.operation_status,
+            transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN,
+            transition_duration=160,
+            reveal_child=False,
+        )
+        self._op_pulse_id = 0
+        self._op_progress_determinate = False
 
-        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        content.set_hexpand(True)
-        content.set_vexpand(True)
-        content.append(self.banner)
-        content.append(self.operation_status)
-        content.append(self.stack)
-        content.append(self.console_revealer)
-        toolbar = Adw.ToolbarView(content=content)
+        # Native slide-in navigation on the LEFT. It is an overlay (collapsed split view),
+        # so it never reserves layout space and can never leave a gap next to the feed.
+        # It is closed by default; picking a destination or clicking outside closes it.
+        self.sidebar = self._build_sidebar()
+        self.sidebar_scroll = Gtk.ScrolledWindow(
+            hscrollbar_policy=Gtk.PolicyType.NEVER,
+            vscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+            child=self.sidebar,
+        )
+        main_col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        main_col.append(self.banner)
+        main_col.append(self.stack)
+        main_col.append(self.console_revealer)
+
+        self.split = Adw.OverlaySplitView(
+            collapsed=True, show_sidebar=False,
+            sidebar_position=Gtk.PackType.START,      # left side
+            min_sidebar_width=210, max_sidebar_width=240,
+            sidebar=self.sidebar_scroll, content=main_col,
+        )
+        # Keep the header toggle in sync (scrim click / Escape also close the sidebar).
+        self.split.connect("notify::show-sidebar",
+                           lambda s, _p: self.sidebar_toggle.set_active(s.get_show_sidebar()))
+        # Select the default item only after the split view exists.
+        self.sidebar_buttons["all"].set_active(True)
+        self.sidebar_toggle.set_active(False)
+        self.split.set_show_sidebar(False)
+
+        toolbar = Adw.ToolbarView(content=self.split)
         toolbar.add_top_bar(self.header)
         self._setup_narrow_mode(toolbar)
 
         self.prefs_page = self._build_prefs_page()
-        self.nav = Adw.NavigationView()
+        self.nav = Adw.NavigationView(vexpand=True, hexpand=True)
         self.nav.push(Adw.NavigationPage(child=toolbar, title="Software", tag="main"))
         self.nav.connect("popped", lambda _n, page: setattr(self, "details", None)
                          if page is self.details else None)
-        self.toasts = Adw.ToastOverlay(child=self.nav)
+        # Keep operation feedback outside NavigationView so it remains visible while
+        # a DetailsPage (or another pushed page) is on screen.
+        window_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        # This is deliberately outside NavigationView: it remains visible above both
+        # the store and pushed app-detail pages while an operation is running.
+        window_content.append(self.operation_status_revealer)
+        window_content.append(self.nav)
+        self.toasts = Adw.ToastOverlay(child=window_content)
         self.set_content(self.toasts)
 
         self.apply_feed_mode()
@@ -1468,20 +1680,125 @@ class StoreWindow(Adw.ApplicationWindow):
         self.load_catalog()
         self.refresh_updates()
 
-    def _setup_narrow_mode(self, toolbar):
-        """Below 600px the switcher moves from the header to a bottom bar (libadwaita >= 1.4)."""
-        self.switcher_bar = Adw.ViewSwitcherBar(stack=self.stack)
-        toolbar.add_bottom_bar(self.switcher_bar)
-        if not hasattr(Adw, "Breakpoint"):
+    def _build_sidebar(self):
+        sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        sidebar.add_css_class("navigation-sidebar")
+        discover = Gtk.Label(label="DISCOVER", xalign=0)
+        discover.add_css_class("navigation-sidebar-title")
+        sidebar.append(discover)
+        self.sidebar_buttons = {}
+
+        def add_item(name, title, icon, section):
+            button = Gtk.ToggleButton()
+            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            image = Gtk.Image.new_from_icon_name(icon)
+            image.set_pixel_size(18)
+            label = Gtk.Label(label=str(title), xalign=0.0, hexpand=True)
+            row.append(image)
+            row.append(label)
+            button.set_child(row)
+            button.add_css_class("flat")
+            button.set_halign(Gtk.Align.FILL)
+            button.connect("toggled", self._sidebar_item_toggled, name)
+            self.sidebar_buttons[name] = button
+            sidebar.append(button)
+
+        add_item("all", "All Apps", "view-grid-symbolic", "discover")
+        categories = Gtk.Label(label="CATEGORIES", xalign=0)
+        categories.add_css_class("navigation-sidebar-title")
+        categories.set_margin_top(8)
+        sidebar.append(categories)
+        # GROUPS is a mapping of stable group indexes to display names.
+        # Iterate over its items rather than its integer keys.
+        group_items = (model.GROUPS.items() if isinstance(model.GROUPS, dict)
+                       else enumerate(model.GROUPS))
+        for index, title in group_items:
+            add_item(f"group:{index}", title, "folder-symbolic", "categories")
+        sources = Gtk.Label(label="SOURCES", xalign=0)
+        sources.add_css_class("navigation-sidebar-title")
+        sources.set_margin_top(8)
+        sidebar.append(sources)
+        add_item("flathub", "Flathub", "package-x-generic-symbolic", "sources")
+        add_item("rpm", "RPM Packages", "computer-symbolic", "sources")
+        separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        separator.set_margin_top(8)
+        separator.set_margin_bottom(5)
+        sidebar.append(separator)
+        manage = Gtk.Label(label="MANAGE", xalign=0)
+        manage.add_css_class("navigation-sidebar-title")
+        sidebar.append(manage)
+        add_item("system", "System", "emblem-system-symbolic", "manage")
+        # The default selection is applied by StoreWindow after the split view is built.
+        self.sidebar_buttons["flathub"].set_visible(bool(self.config["separate_feeds"]))
+        self.sidebar_buttons["rpm"].set_visible(bool(self.config["separate_feeds"] and self.rpm_enabled))
+        return sidebar
+
+    def _toggle_sidebar(self, button):
+        # Toggle signals can fire during widget construction; never dereference
+        # the split view until StoreWindow has created it.
+        split = getattr(self, "split", None)
+        if split is not None:
+            split.set_show_sidebar(button.get_active())
+
+    def _sidebar_item_toggled(self, button, name):
+        if not button.get_active():
+            # Clicking the active item must not leave nothing selected.
+            if not any(b.get_active() for b in self.sidebar_buttons.values()):
+                button.set_active(True)
             return
-        try:
-            bp = Adw.Breakpoint.new(Adw.BreakpointCondition.parse("max-width: 600px"))
-            bp.add_setter(self.switcher_bar, "reveal", True)
-            bp.add_setter(self.switcher, "visible", False)
-            bp.add_setter(self.window_title, "visible", True)
-            self.add_breakpoint(bp)
-        except (TypeError, GLib.Error):
-            pass
+        for key, other in self.sidebar_buttons.items():
+            if key != name:
+                other.set_active(False)
+        if name.startswith("group:"):
+            index = int(name.split(":", 1)[1])
+            self.feed_all.selected_group = index
+            self.feed_all.refilter()
+            self.stack.set_visible_child(self.feed_all)
+        else:
+            if name in ("all", "flathub", "rpm"):
+                self.feed_all.selected_group = None
+                self.feed_all.heading.set_label("Discover")
+                self.feed_all.refilter()
+            target = {"all": self.feed_all, "flathub": self.feed_fp,
+                      "rpm": self.feed_rpm, "system": self.system_page}.get(name)
+            if target is not None:
+                self.stack.set_visible_child(target)
+        # Selecting a destination closes the sidebar.
+        if hasattr(self, "split"):
+            self.split.set_show_sidebar(False)
+
+    def _setup_narrow_mode(self, toolbar):
+        """The sidebar remains the sole section navigator at every window size."""
+        return
+
+    # ----- recommendations (feed.py items -> catalog entries) -----
+
+    def find_entry(self, item):
+        """Catalog entry for a feed item (matched by Flatpak id, AppStream id, RPM name or name)."""
+        key = (item.get("id") or "").casefold()
+        name = (item.get("name") or "").casefold()
+        for e in self.entries:
+            ids = {(e.flatpak_id or "").casefold(), (e.appstream_id or "").casefold(),
+                   (e.rpm_pkg or "").casefold()}
+            if key and key in ids:
+                return e
+        for e in self.entries:
+            if name and (e.name or "").casefold() == name:
+                return e
+        return None
+
+    def promo_icon(self, item, size):
+        e = self.find_entry(item)
+        if e is not None:
+            return make_icon(self, e, size)
+        img = Gtk.Image.new_from_icon_name(item.get("icon") or "application-x-executable")
+        img.set_pixel_size(size)
+        return img
+
+    def open_feed_item(self, item):
+        e = self.find_entry(item)
+        if e is not None:
+            self.show_details(e)
 
     # ----- app page -----
 
@@ -1498,8 +1815,13 @@ class StoreWindow(Adw.ApplicationWindow):
         sep = self.config["separate_feeds"]
         self.stack.get_page(self.feed_fp).set_visible(sep)
         self.stack.get_page(self.feed_rpm).set_visible(sep and self.rpm_enabled)
+        if hasattr(self, "sidebar_buttons"):
+            self.sidebar_buttons["flathub"].set_visible(sep)
+            self.sidebar_buttons["rpm"].set_visible(sep and self.rpm_enabled)
         if not sep and self.stack.get_visible_child_name() in ("flathub", "rpm"):
             self.stack.set_visible_child(self.feed_all)
+            if hasattr(self, "sidebar_buttons"):
+                self.sidebar_buttons["all"].set_active(True)
 
     # ----- catalog / state -----
 
@@ -1748,15 +2070,36 @@ class StoreWindow(Adw.ApplicationWindow):
         elif self.rpm_enabled:
             self.update_system()
 
+    def _pulse_operation_progress(self):
+        if not self.busy or self._op_progress_determinate:
+            self._op_pulse_id = 0
+            return GLib.SOURCE_REMOVE
+        self.operation_progress.pulse()
+        return GLib.SOURCE_CONTINUE
+
+    def _set_operation_indeterminate(self, reset=True):
+        """Show motion, not a misleading 0%, while a package manager has no useful %."""
+        self._op_progress_determinate = False
+        self.operation_progress.set_show_text(False)
+        if reset:
+            self.operation_progress.set_fraction(0)
+        if self.busy and not self._op_pulse_id:
+            self.operation_progress.pulse()
+            self._op_pulse_id = GLib.timeout_add(100, self._pulse_operation_progress)
+
     def set_busy(self, busy, kind=None):
         self.busy = busy
         self.op_kind = kind if busy else None
         self.spinner.set_spinning(busy)
         self.system_page.refresh()
-        self.operation_status.set_visible(busy)
+        self.operation_status_revealer.set_reveal_child(busy)
         if not busy:
+            if self._op_pulse_id:
+                GLib.source_remove(self._op_pulse_id)
+                self._op_pulse_id = 0
+            self._op_progress_determinate = False
             self.operation_progress.set_fraction(0)
-            self.operation_progress.set_text("")
+            self.operation_progress.set_show_text(False)
             self.operation_label.set_label("")
 
     def run_command(self, argv, reboot=False, after=None, kind="app"):
@@ -1775,8 +2118,10 @@ class StoreWindow(Adw.ApplicationWindow):
                 break
         self.set_busy(True, kind)
         self.operation_label.set_label(f"{verb}…")
-        self.operation_progress.set_fraction(0)
-        self.operation_progress.pulse()
+        if self._op_pulse_id:
+            GLib.source_remove(self._op_pulse_id)
+            self._op_pulse_id = 0
+        self._set_operation_indeterminate(reset=True)
         self.console.clear()
         self.console.append("$ " + command)
 
@@ -1785,15 +2130,31 @@ class StoreWindow(Adw.ApplicationWindow):
             text = line.strip()
             if text:
                 self.operation_label.set_label(f"{verb}…  {text[:140]}")
-            # Determinate progress when the package manager reports a percentage; otherwise
-            # pulse to show ongoing work without inventing a percentage.
+            # Flatpak can spend a long time installing/downloading a runtime while
+            # reporting 0%. Treat that as an unknown phase, not a real 0-percent bar.
+            # Runtime/app deployment messages also start a fresh indeterminate phase,
+            # so a previous app download percentage cannot get stuck on screen.
+            lowered = text.casefold()
+            phase_start = any(token in lowered for token in (
+                "installing runtime", "installing app", "downloading runtime",
+                "downloading app", "deploying runtime", "deploying app",
+                "pulling runtime", "pulling app", "checking out runtime",
+            ))
             match = re.search(r"(?<!\d)(\d{1,3})(?:\.\d+)?%", line)
+            if phase_start:
+                self._set_operation_indeterminate(reset=True)
             if match:
                 percent = min(100, max(0, int(match.group(1))))
-                self.operation_progress.set_fraction(percent / 100.0)
-                self.operation_progress.set_text(f"{percent}%")
-            else:
-                self.operation_progress.pulse()
+                if percent == 0:
+                    self._set_operation_indeterminate(reset=True)
+                else:
+                    self._op_progress_determinate = True
+                    if self._op_pulse_id:
+                        GLib.source_remove(self._op_pulse_id)
+                        self._op_pulse_id = 0
+                    self.operation_progress.set_show_text(True)
+                    self.operation_progress.set_fraction(percent / 100.0)
+                    self.operation_progress.set_text(f"{percent}%")
             if kind == "system":
                 self.system_page.on_line(line)
 
@@ -1867,6 +2228,7 @@ class StoreWindow(Adw.ApplicationWindow):
         s1 = Gio.Menu()
         s1.append_item(theme_item)
         s2 = Gio.Menu()
+        s2.append("New Window", "app.new-window")
         s2.append("Refresh Package Data", "win.refresh")
         s3 = Gio.Menu()
         s3.append("Preferences", "win.preferences")
@@ -1980,8 +2342,8 @@ class StoreWindow(Adw.ApplicationWindow):
         if hasattr(Adw, "AboutDialog"):
             Adw.AboutDialog(**kwargs).present(self)
         else:
-            Adw.AboutWindow(transient_for=self, **kwargs).present()            
-                
+            Adw.AboutWindow(transient_for=self, **kwargs).present()
+
     def reboot(self):
         try:
             Gio.Subprocess.new(["systemctl", "reboot"], Gio.SubprocessFlags.NONE)
@@ -2027,7 +2389,16 @@ class StoreApp(Adw.Application):
         quit_act.connect("activate", lambda *_: self.quit())
         self.add_action(quit_act)
         self.set_accels_for_action("app.quit", ["<primary>q"])
+        self.set_accels_for_action("app.new-window", ["<primary>n"])
+        new_window = Gio.SimpleAction.new("new-window", None)
+        new_window.connect("activate", self._new_window)
+        self.add_action(new_window)
         self.set_accels_for_action("win.preferences", ["<primary>comma"])
+
+    def _new_window(self, *_args):
+        """Create and present an independent store window."""
+        window = StoreWindow(self, self.config)
+        window.present()
 
     def do_command_line(self, cmdline):
         args = cmdline.get_arguments()[1:]
