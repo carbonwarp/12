@@ -1376,28 +1376,29 @@ class SystemPage(Gtk.ScrolledWindow):
 
     @staticmethod
     def _make_os_logo(release):
-        """Use the distro logo from os-release/icon theme, with Fedora file fallbacks."""
-        if "fedora" in release.get("ID", "").lower():
-            # Icon-only Fedora mark; deliberately avoid wordmark/logo-plus-text files.
-            for path in (
-                "/usr/share/icons/hicolor/scalable/apps/fedora-logo-icon.svg",
-                "/usr/share/icons/hicolor/scalable/apps/org.fedoraproject.FedoraLogo.svg",
-                "/usr/share/icons/hicolor/128x128/apps/fedora-logo-icon.png",
-                "/usr/share/icons/hicolor/64x64/apps/fedora-logo-icon.png",
-                "/usr/share/pixmaps/fedora-logo-icon.png",
+        """Use the distro logo from os-release ICON, falling back to the computer icon."""
+        theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+
+        # Prefer the ICON field from /etc/os-release.
+        icon = release.get("ICON", "").strip()
+        if icon:
+            # Look only for SVG files in scalable icon directories.
+            for base in (
+                "/usr/share/icons/hicolor/scalable/apps",
+                "/usr/share/icons/hicolor/scalable",
+                "/usr/share/icons",
             ):
+                path = os.path.join(base, icon if icon.endswith(".svg") else f"{icon}.svg")
                 if os.path.isfile(path):
                     return Gtk.Image.new_from_file(path)
 
-        theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
-        candidates = (["fedora-logo-icon", "org.fedoraproject.FedoraLogo", "fedora-logo"]
-                      if "fedora" in release.get("ID", "").lower() else [])
-        candidates += [release.get("LOGO", ""), "distributor-logo", "computer-symbolic"]
-        for name in candidates:
-            if name and theme.has_icon(name):
-                return Gtk.Image.new_from_icon_name(name)
-        return Gtk.Image.new_from_icon_name("computer-symbolic")
+        # Fall back to the distro's icon theme entry.
+        logo = release.get("LOGO", "").strip()
+        if logo and theme.has_icon(logo):
+            return Gtk.Image.new_from_icon_name(logo)
 
+        return Gtk.Image.new_from_icon_name("computer-symbolic")
+    
     @staticmethod
     def _hardware_details():
         details = []

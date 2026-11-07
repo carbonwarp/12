@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-import runpy
-import sys
+#!/usr/bin/env bash
+PYTHONPATH=/usr/lib exec python -m cw_software "$@"
 
-sys.path.insert(0, "/usr/lib")
-runpy.run_module("cw-software", run_name="__main__")

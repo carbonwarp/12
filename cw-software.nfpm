@@ -3,7 +3,7 @@
 name: cw-software
 arch: all
 platform: linux
-version: 100.0.1
+version: 110.0.1
 release: 1
 
 maintainer: Carbonwarp <support@carbonwarp.com>
