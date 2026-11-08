@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+
+  <wallpaper deleted="false">
+    <name>WALLPAPER_ONE_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/carbonwarp-main.svg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>WALLPAPER_TWO_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/paperfold.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>WALLPAPER_THREE_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/abstract.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+  
+    <wallpaper deleted="false">
+    <name>WALLPAPER_FOUR_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/city.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>WALLPAPER_FIVE_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/dinight.png</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>WALLPAPER_SIX_NAME</name>
+    <filename>/usr/share/backgrounds/carbonwarp-backgrounds/bird.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#000000</pcolor>
+    <scolor>#000000</scolor>
+  </wallpaper>
+</wallpapers>

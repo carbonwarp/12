@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+
+name: carbonwarp-backgrounds
+arch: all
+platform: linux
+version: 1.0.0
+release: 1
+
+maintainer: Carbonwarp <support@carbonwarp.com>
+vendor: Carbonwarp
+homepage: https://carbonwarp.com
+license: GPL-v3
+description: Background package of Carbonwarp 12
+
+contents:
+  - src: carbonwarp-backgrounds/usr/
+    dst: /usr/
+    type: tree
+
+ 
+scripts:
+  postinstall: carbonwarp-backgrounds/scripts/postinstall.sh
+
+rpm:
+  buildhost: milkyway
+  signature:
+    key_file: private.asc
+
+
