@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+
+name: carbonwarp-clearui
+arch: all
+platform: linux
+version: 1.0.0
+release: 1
+
+maintainer: Carbonwarp <support@carbonwarp.com>
+vendor: Carbonwarp
+homepage: https://carbonwarp.com
+license: GPL-v3
+description: Carbonwarp 12 UI - ClearUI
+
+depends:
+  - dconf
+  - gnome-shell-extension-dash-to-dock
+  - papirus-icon-theme
+  # Arcmenu, using bluebuild for it, is easier
+  
+contents:
+  - src: clearui/90-clearui
+    dst: /etc/dconf/db/local.d/90-clearui
+
+scripts:
+  postinstall: clearui/post.sh
+  postremove: clearui/post.sh
+
+rpm:
+  buildhost: milkyway
+  signature:
+    key_file: private.asc
+
