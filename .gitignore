@@ -4,6 +4,15 @@
 dist
 
 *key*
+*.asc*
 
 !cosign.pub
 !public.asc
+
+upstream_bin
+pre_dist
+
+# Safet Net
+*.rpm
+*.deb
+*.tar.*
