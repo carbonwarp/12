@@ -1,14 +1,13 @@
-name: cw-software
+name: Package the packages. 
 
 on:
   push:
     tags:
-      - "cw-software-v*" # trigger on tag push
-      
+      - "*-v*"
+
 concurrency:
-  group: cw-software-${{ github.ref }}
-  # never cancel a running release
-  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   NFPM_VERSION: "2.47.0"
@@ -21,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Derive package from tag
+        run: echo "PKG=${GITHUB_REF_NAME%-v*}" >> "$GITHUB_ENV"
+
       - uses: extractions/setup-just@v3
 
       - name: Install nfpm
@@ -28,7 +30,7 @@ jobs:
           curl -fsSL -o /tmp/nfpm.deb \
             "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_amd64.deb"
           sudo dpkg -i /tmp/nfpm.deb
-          
+
       - name: Write signing key
         env:
           PRIVATE_ASC: ${{ secrets.PRIVATE_ASC }}
@@ -39,38 +41,35 @@ jobs:
 
       - name: Build
         env:
-          NFPM_PASSPHRASE: ${{ secrets.NFPM_PASSPHRASE }} 
-        run: just -f cw-software.just
+          NFPM_PASSPHRASE: ${{ secrets.NFPM_PASSPHRASE }}
+        run: just -f "${PKG}.just"
 
       - name: Remove signing key
         if: always()
         run: rm -f private.asc
 
       - name: Check output
-        run: ls -l cw-software/dist/
+        run: ls -l "${PKG}/dist/"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cw-software-dist
-          path: cw-software/dist/*
+          name: ${{ env.PKG }}-dist
+          path: ${{ env.PKG }}/dist/*
 
-      # ---- release (tags only) ----
-      - name: Versioned release (cw-software-vX.Y.Z)
-        if: startsWith(github.ref, 'refs/tags/cw-software-v')
+      - name: Versioned release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" cw-software/dist/* \
-            --title "CWSoftware ${GITHUB_REF_NAME#cw-software-v}" \
+          gh release create "$GITHUB_REF_NAME" "${PKG}"/dist/* \
+            --title "${PKG} ${GITHUB_REF_NAME#${PKG}-v}" \
             --latest=false
 
-      - name: Rolling release (cw-software-latest)
-        if: startsWith(github.ref, 'refs/tags/cw-software-v')
+      - name: Rolling release (latest)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete cw-software-latest --cleanup-tag --yes || true
-          gh release create cw-software-latest cw-software/dist/* \
+          gh release delete "${PKG}-latest" --cleanup-tag --yes || true
+          gh release create "${PKG}-latest" "${PKG}"/dist/* \
             --target "$GITHUB_SHA" \
-            --title "CWSoftware (latest: ${GITHUB_REF_NAME#cw-software-v})" \
+            --title "${PKG} (latest: ${GITHUB_REF_NAME#${PKG}-v})" \
             --latest=false
