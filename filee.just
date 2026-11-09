@@ -7,7 +7,7 @@ workdir  := "filee"
 upstream := workdir + "/upstream_bin"
 dist     := workdir + "/dist"
 
-default: pull_bin
+default: pull_bin package_all
 
 # Download both upstream tarballs into filee/upstream_bin/{x86_64,arm64}/
 pull_bin:
