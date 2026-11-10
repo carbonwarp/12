@@ -21,6 +21,8 @@ depends:
 contents:
   - src: clearui/90-clearui
     dst: /etc/dconf/db/local.d/90-clearui
+  - src: clearui/face
+    dst: /etc/skel/.face
 
 scripts:
   postinstall: clearui/post.sh

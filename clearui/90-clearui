@@ -3,7 +3,7 @@
 # Sets arcmenu and dash-to-dock with papirus as the icon theme.
 
 [org/gnome/shell]
-enabled-extensions=['arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com']
+enabled-extensions=['arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com',  'transparent-top-bar@zhanghai.me']
 
 [org/gnome/desktop/interface]
 icon-theme='Papirus'
