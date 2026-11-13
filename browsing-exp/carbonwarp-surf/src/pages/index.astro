@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Notes from '../components/Notes.astro';
+import Hero from '../components/Hero.astro';
+import Feed from '../components/Feed.astro';
+import Settings from '../components/Settings.astro';
+---
+<Base title="Carbonwarp Surf">
+  <div class="grid min-h-screen grid-cols-[236px_minmax(0,1fr)] max-compact:grid-cols-[68px_minmax(0,1fr)] dock:pr-[var(--dock,22px)]">
+    <Sidebar />
+    <main class="flex min-w-0 flex-col items-center px-[5vw] pt-6 pb-10 max-compact:px-4 max-compact:pt-[18px] max-compact:pb-8">
+      <Notes />
+      <Hero />
+      <Feed />
+      <div class="mt-[30px] text-center text-[11px] text-faintest">Your searches go directly to the selected provider.</div>
+    </main>
+  </div>
+  <Settings />
+</Base>
+
+<script>
+  import '../scripts/main.js';
+</script>

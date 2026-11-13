@@ -1,0 +1,42 @@
+---
+const field = 'h-[41px] w-full rounded-[10px] border border-line bg-white/6 px-3 text-xs text-ink outline-0 focus:border-accent [&_optgroup]:bg-panel [&_option]:bg-panel';
+const label = 'mt-3 mb-[7px] block text-[11px] text-ink-dim';
+const help = 'mb-3.5 text-[11px] leading-[1.55] text-muted';
+const section = 'border-t border-line py-[19px]';
+const heading = 'mb-1.5 text-[13px] font-bold';
+const button = 'mt-3 rounded-[10px] px-3.5 py-2.5 text-xs font-[750]';
+---
+<div class="pointer-events-none fixed inset-0 z-5 bg-black/40 opacity-0 transition duration-[220ms] data-[open]:pointer-events-auto data-[open]:opacity-100" id="overlay"></div>
+<aside class="fixed top-0 right-0 z-6 h-dvh w-[min(410px,92vw)] translate-x-[105%] overflow-auto border-l border-line bg-panel px-[25px] py-[27px] shadow-[-25px_0_70px_#0005] transition-transform duration-[250ms] data-[open]:translate-x-0" id="drawer" aria-label="Customize start page" aria-hidden="true" inert>
+  <div class="mb-[22px] flex items-center justify-between"><h2 class="text-[20px] font-bold">Customize</h2><button class="size-[34px] rounded-[10px] border border-line bg-transparent text-[19px] text-ink-dim" id="closeSettings" type="button" aria-label="Close settings">×</button></div>
+
+  <section class={section}>
+    <h3 class={heading}>Background</h3>
+    <p class={help}>Choose a subtle color or use an image from your device. Saved in this browser.</p>
+    <div class="my-3 flex flex-wrap gap-[9px]" id="swatches"></div>
+    <label class="inline-flex cursor-pointer rounded-[10px] border border-line bg-white/6 px-[13px] py-2.5 text-xs" for="backgroundFile">＋ Choose an image</label>
+    <input class="hidden" id="backgroundFile" type="file" accept="image/*">
+    <button class={`${button} border border-line bg-white/7 text-ink-soft`} id="removeBackground" type="button">Reset background</button>
+  </section>
+
+  <section class={section}>
+    <h3 class={heading}>Add to sidebar</h3>
+    <p class={help}>Add a search engine or an AI using a URL template. Put <code>%s</code> where the query goes.</p>
+    <div id="managedTargets"></div>
+    <label class={label} for="targetGroup">Type</label>
+    <select class={field} id="targetGroup"></select>
+    <label class={label} for="targetName">Name</label>
+    <input class={field} id="targetName" maxlength="32" placeholder="e.g. Startpage">
+    <label class={label} for="targetUrl">URL template</label>
+    <input class={field} id="targetUrl" type="url" placeholder="https://example.com/search?q=%s">
+    <button class={`${button} border-0 bg-accent text-tile-ink`} id="addTarget" type="button">Add to sidebar</button>
+    <p class={help} id="targetError" role="status"></p>
+  </section>
+
+  <section class={section}>
+    <h3 class={heading}>Default</h3>
+    <p class={help}>This one is selected when you open a new tab.</p>
+    <select class={field} id="defaultTarget"></select>
+  </section>
+</aside>
+<div class="pointer-events-none fixed bottom-[22px] left-1/2 z-10 -translate-x-1/2 translate-y-[15px] rounded-[10px] bg-[#393833] px-[15px] py-2.5 text-xs text-white opacity-0 transition duration-200 data-[show]:translate-y-0 data-[show]:opacity-100" id="toast" role="status"></div>

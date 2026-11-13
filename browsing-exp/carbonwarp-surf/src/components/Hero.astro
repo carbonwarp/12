@@ -1,0 +1,18 @@
+---
+---
+<section class="mx-auto flex min-h-[calc(100vh_-_150px)] w-[min(760px,100%)] flex-col justify-center pt-1.5 pb-7 text-center max-compact:min-h-[calc(100vh_-_130px)]">
+  <div class="mb-[15px] text-[11px] font-[650] tracking-[2.2px] text-muted uppercase">A clearer starting point</div>
+  <h1 class="mb-3 text-[clamp(32px,5vw,53px)] leading-[1.08] font-[680] tracking-[-2.4px]">What are you looking for?</h1>
+  <p class="mb-5 text-sm text-muted max-tiny:mb-3.5">One search box. Your choice of search engine or AI.</p>
+  <div class="w-0 mx-auto mb-3.5 size-[78px] max-compact:size-16 [&_svg]:size-full [&_svg]:overflow-visible" id="spiral" aria-hidden="true"></div>
+  <form class="mx-auto w-full max-w-[690px]" id="searchForm">
+    <div class="flex h-[70px] items-center gap-3.5 rounded-[19px] border border-white/12 bg-surface/92 px-[17px] shadow-float transition duration-200 focus-within:border-accent/70 focus-within:ring-4 focus-within:ring-accent/12 max-compact:h-[62px] max-compact:gap-[9px] max-compact:px-[11px]">
+      <div class="icon-tile size-[34px] rounded-[11px] text-sm max-compact:size-8 [&>img]:size-[21px]" id="selectedIcon"></div>
+      <input class="min-w-0 flex-1 border-0 bg-transparent text-[17px] text-ink outline-0 placeholder:text-faint max-compact:text-[15px]" id="query" type="search" autocomplete="off" autofocus aria-label="Search query">
+      <button class="h-[43px] rounded-xl bg-linear-135 from-accent-soft to-accent px-[17px] text-[13px] font-[750] whitespace-nowrap text-tile-ink hover:brightness-110 max-compact:px-3 max-tiny:w-10 max-tiny:p-0 max-tiny:text-[0px] max-tiny:after:text-lg max-tiny:after:content-['↗']" type="submit">Go ↗</button>
+    </div>
+    <div class="mt-3.5 text-[11px] text-faint"><span id="hintVerb"></span> <strong class="font-[650] text-accent-soft" id="selectedName"></strong> · Choose another from the sidebar</div>
+  </form>
+  <div class="mt-[34px] flex flex-wrap justify-center gap-2.5 max-compact:mt-[26px]" id="quickLinks"></div>
+  <button class="mx-auto mt-[34px] animate-bob text-xs text-faintest hover:text-accent-soft motion-reduce:animate-none" id="scrollCue" type="button">Today's reads ↓</button>
+</section>

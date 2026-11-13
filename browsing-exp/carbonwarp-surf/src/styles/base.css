@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* Design tokens. Utilities such as bg-accent, text-muted or animate-bob come from here. */
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* breakpoints (max-compact: = up to 760px wide, dock: = 1280px and wider) */
+  --breakpoint-tiny: 421px;
+  --breakpoint-compact: 761px;
+  --breakpoint-dock: 1280px;
+
+  /* brand + text scale */
+  --color-accent: #d97757;
+  --color-accent-soft: #e49a7d;
+  --color-ink: #eeeae2;
+  --color-ink-soft: #e3ded4;
+  --color-ink-dim: #c2bdb3;
+  --color-muted: #aaa69d;
+  --color-faint: #969188;
+  --color-faintest: #7f7b73;
+  --color-blush: #f1d5c9;
+  --color-done: #7fc589;
+  --color-tile: #efeae0;
+  --color-tile-ink: #292522;
+
+  --shadow-float: 0 24px 70px #0004;
+
+  --animate-spin-slow: spin 16s linear infinite;
+  --animate-curl: curl 3.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-pulse-core: pulse-core 1.9s ease-in-out infinite;
+  --animate-bob: bob 2.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes curl {
+    0% { stroke-dashoffset: 1; }
+    48%, 56% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -1; }
+  }
+  @keyframes pulse-core {
+    0%, 100% { transform: scale(0.6); opacity: 0.6; }
+    50% { transform: scale(1.5); opacity: 1; }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+  @keyframes shimmer {
+    to { background-position: -300% 0; }
+  }
+}
+
+/* Surfaces follow the chosen background. settings.js / Base.astro set --bg-base on <html>,
+   and every surface below is mixed from it, so the sidebar, cards and panels re-tint together. */
+@theme inline {
+  --color-surface: color-mix(in srgb, var(--bg-base) 95%, white);
+  --color-panel: color-mix(in srgb, var(--bg-base) 98%, white);
+  --color-line: color-mix(in srgb, var(--bg-base) 82%, white);
+  --color-rail: color-mix(in srgb, color-mix(in srgb, var(--bg-base) 84%, black) 78%, transparent);
+}
+
+/* Light backing so dark favicons stay visible. Size and radius are set where it is used. */
+@utility icon-tile {
+  @apply grid flex-none place-items-center overflow-hidden bg-tile font-[750] text-tile-ink;
+}
+
+@layer base {
+  * { scrollbar-width: none; }
+  button:not(:disabled) { cursor: pointer; }
+}

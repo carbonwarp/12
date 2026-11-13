@@ -1,0 +1,14 @@
+---
+---
+<section class="mx-auto w-[min(1180px,100%)] pt-[18px]" id="feed" aria-label="News feed">
+  <div class="mb-4 flex items-end justify-between gap-3.5 max-tiny:flex-col max-tiny:items-start">
+    <div>
+      <h2 class="text-[24px] font-bold tracking-[-.6px] max-[900px]:text-[21px]">Today's reads</h2>
+      <p class="mt-[5px] text-xs text-muted" id="feedSub">Top stories from trusted sources</p>
+    </div>
+    <button class="rounded-[10px] border border-line bg-white/5 px-[13px] py-2 text-xs whitespace-nowrap text-ink-soft hover:bg-white/9 disabled:cursor-default disabled:opacity-50" id="refreshFeed" type="button">↻ Refresh</button>
+  </div>
+  <div class="mb-5 flex flex-wrap gap-2" id="feedChips"></div>
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,255px),1fr))] gap-[18px] max-compact:gap-3.5" id="feedGrid"></div>
+  <p class="mt-6 text-center text-xs text-faintest" id="feedStatus" role="status"></p>
+</section>

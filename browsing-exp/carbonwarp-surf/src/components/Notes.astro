@@ -1,0 +1,47 @@
+---
+import { CHECKBOX } from '../scripts/ui.js';
+
+const linkBtn = 'flex-none border-0 bg-transparent p-0.5 text-[10px] text-accent-soft';
+const paneLabel = 'pl-0.5 text-[10px] font-bold tracking-[1.3px] text-faint uppercase';
+const field = 'rounded-[10px] border border-line bg-white/5 text-[13px] outline-0';
+---
+<header class="relative z-4 flex min-h-[35px] w-full flex-col items-end gap-2">
+  <div class="text-xs text-faint" id="clock"></div>
+  <!-- wide screens: notes dock to the right edge, reserve their own space and stay open while you search -->
+  <div class="dock:fixed dock:inset-y-0 dock:right-0 dock:z-3 dock:w-0" id="notes">
+    <button class="rounded-full border border-white/13 bg-white/5 px-[13px] py-1.5 text-xs text-ink-soft hover:border-accent/38 hover:bg-white/9 aria-expanded:border-accent/38 aria-expanded:bg-white/9 dock:absolute dock:top-0 dock:right-0 dock:bottom-0 dock:w-[22px] dock:rounded-none dock:border-0 dock:border-l dock:border-white/8 dock:bg-transparent dock:p-0 dock:text-[11px] dock:tracking-[2.5px] dock:text-faintest dock:[writing-mode:vertical-rl] dock:hover:bg-accent/8 dock:hover:text-accent-soft dock:aria-expanded:border-l-accent/25 dock:aria-expanded:bg-transparent dock:aria-expanded:text-[#c9a392]" id="notesToggle" type="button" aria-expanded="false" aria-controls="notesPanel">✎ Notes</button>
+    <div class="absolute top-[calc(100%_+_8px)] right-0 flex h-[min(var(--nh,75vh),calc(100vh_-_120px))] min-h-[300px] w-[min(var(--nw,340px),calc(100vw_-_290px))] min-w-[220px] flex-col gap-2 rounded-[14px] border border-line bg-panel p-2.5 shadow-[0_24px_60px_#0007] dock:top-6 dock:right-[30px] dock:h-[min(var(--nh,calc(100vh_-_48px)),calc(100vh_-_48px))] dock:w-[min(var(--nw,340px),calc(100vw_-_796px))] max-compact:h-[min(75vh,560px)] max-compact:w-[min(330px,calc(100vw_-_104px))] max-compact:min-w-0" id="notesPanel" hidden>
+      <!-- two equal halves: notes on top, to-do below -->
+      <div class="flex h-1/2 min-h-0 flex-1 flex-col gap-2" id="paneNotes">
+        <div class={paneLabel}>Notes</div>
+        <textarea class={`${field} min-h-0 w-full flex-1 resize-none overflow-auto px-[11px] py-2.5 leading-[1.55] focus:border-accent`} id="notesText" placeholder="Jot something down. It saves automatically in this browser." aria-label="Notepad"></textarea>
+        <div class={`${field} min-h-0 w-full flex-1 overflow-auto border-dashed px-[11px] py-2.5 leading-[1.55] [overflow-wrap:anywhere] whitespace-pre-wrap text-ink-soft data-[empty]:text-faintest`} id="notesRead" hidden></div>
+        <div class="flex items-center gap-2 pl-4 text-[11px] text-faint max-compact:pl-0">
+          <span class="min-w-0 flex-1 truncate" id="notesStatus">Saved · 0 chars</span>
+          <div class="inline-flex flex-none overflow-hidden rounded-[7px] border border-line" role="group" aria-label="Notes mode">
+            <button class="border-0 bg-transparent px-2 py-0.5 text-[10px] text-muted aria-pressed:bg-accent/19 aria-pressed:text-blush" type="button" id="modeEdit" aria-pressed="true">Edit</button>
+            <button class="border-0 bg-transparent px-2 py-0.5 text-[10px] text-muted aria-pressed:bg-accent/19 aria-pressed:text-blush" type="button" id="modeRead" aria-pressed="false">Read</button>
+          </div>
+          <button class={linkBtn} id="notesClear" type="button">Clear</button>
+        </div>
+      </div>
+
+      <div class="flex h-1/2 min-h-0 flex-1 flex-col gap-2 border-t border-line pt-2.5" id="paneTodos">
+        <div class={paneLabel}>To-do</div>
+        <div class="flex min-h-0 flex-1 flex-col gap-px overflow-y-auto pr-0.5" id="todoList"></div>
+        <form class="flex flex-col gap-[7px] border-t border-line pt-[9px]" id="todoForm">
+          <div class="flex gap-[7px]">
+            <input class="h-[34px] min-w-0 flex-1 rounded-[9px] border border-line bg-white/5 px-2.5 text-[13px] outline-0 focus:border-accent" id="todoInput" type="text" maxlength="200" placeholder="Add a to-do…" autocomplete="off" aria-label="New to-do">
+            <button class="rounded-[9px] border-0 bg-accent px-[13px] text-xs font-[750] text-tile-ink" type="submit">Add</button>
+          </div>
+          <div class="flex items-center justify-between gap-2 pl-0.5">
+            <label class="flex min-w-0 cursor-pointer items-center gap-[7px] text-[11px] text-ink-dim"><input class={`${CHECKBOX} checked:border-accent checked:bg-accent checked:after:text-tile-ink`} type="checkbox" id="todoSticky"> 📌 Sticky <span class="truncate text-faintest">(pinned on top, kept when clearing done)</span></label>
+            <button class={linkBtn} id="todoClear" type="button">Clear done</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="absolute bottom-1 left-1 size-3.5 cursor-nesw-resize touch-none bg-[linear-gradient(45deg,#9a958b_0_14%,transparent_14%_32%,#9a958b_32%_46%,transparent_46%_64%,#9a958b_64%_78%,transparent_78%)] opacity-60 [clip-path:polygon(0_0,0_100%,100%_100%)] hover:opacity-100 max-compact:hidden" id="notesGrip" title="Drag to resize" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
