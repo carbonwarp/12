@@ -38,9 +38,9 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - uses: pnpm/action-setup@v4
-        # reads the version from "packageManager" in package.json.
-        # If that field is missing, add:  with: { version: 10 }
-
+        with:
+          package_json_file: browsing-exp/carbonwarp-surf/package.json
+          
       - uses: actions/setup-node@v4
         with:
           node-version: 22
