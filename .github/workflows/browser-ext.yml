@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 env:
-  ASTRO_DIR:  browsing-exp/carbonwarp-surf/
+  ASTRO_DIR: browsing-exp/carbonwarp-surf
   LATEST_TAG: browser-ext-latest
 
 jobs:
@@ -37,17 +37,21 @@ jobs:
           echo "TAG=$TAG" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
+      - uses: pnpm/action-setup@v4
+        # reads the version from "packageManager" in package.json.
+        # If that field is missing, add:  with: { version: 10 }
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: ${{ env.ASTRO_DIR }}/package-lock.json
+          cache: pnpm
+          cache-dependency-path: ${{ env.ASTRO_DIR }}/pnpm-lock.yaml
 
       - name: Build Astro
         working-directory: ${{ env.ASTRO_DIR }}
         run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm build
 
       - name: Validate build output
         working-directory: ${{ env.ASTRO_DIR }}
@@ -83,7 +87,7 @@ jobs:
           jq --arg v "$VERSION" '.version = $v' dist/manifest.json > dist/manifest.tmp
           mv dist/manifest.tmp dist/manifest.json
           mkdir -p "$GITHUB_WORKSPACE/out/versioned" "$GITHUB_WORKSPACE/out/latest"
-          npx --yes crx3 -p "$RUNNER_TEMP/key.pem" -o "$GITHUB_WORKSPACE/out/browser-ext.crx" dist
+          pnpm dlx crx3 -p "$RUNNER_TEMP/key.pem" -o "$GITHUB_WORKSPACE/out/browser-ext.crx" dist
           rm -f "$RUNNER_TEMP/key.pem"
 
       - name: Generate update.xml (versioned and latest)
@@ -100,7 +104,6 @@ jobs:
             </app>
           </gupdate>
           EOF
-            sed -i 's/^          //' "$2"
           }
           gen "$TAG"        versioned/update.xml
           gen "$LATEST_TAG" latest/update.xml
