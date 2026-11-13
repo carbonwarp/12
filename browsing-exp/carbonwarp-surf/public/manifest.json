@@ -1,23 +1,12 @@
 {
-  "HomepageIsNewTabPage": true,
-  "ShowHomeButton": true,
-  "RestoreOnStartup": 5,
-
-  "ExtensionSettings": {
-    "kpaaapnegfaaoimjpagopchdbmenfngl": {
-      "installation_mode": "force_installed",
-      "update_url": "https://your.host/brave-ntp/update.xml"
-    }
+  "manifest_version": 3,
+  "name": "Carbonwarp Surf",
+  "version": "0.0.1",
+  "description": "New tab page",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
   },
-  
-  "BraveRewardsDisabled": true,
-  "BraveWalletDisabled": true,
-  "BraveVPNDisabled": true,
-  "BraveAIChatEnabled": false,
-  "BraveNewsDisabled": true,
-  "BraveTalkDisabled": true,
-  "BraveP3AEnabled": false,
-  "BraveStatsPingEnabled": false,
-  "BraveWebDiscoveryEnabled": false
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArIxvnmFR7CHPYtqbmmjDqG5JWo5R6eZv8o2u8Pkx0x+CGHDsWITIYRxCzF9RfsMY2KYqwj0T5OJc9mpw9q5/0Zfwt2Vr/VpCFrWhNHwzKbjoiPXSA6FH6iJSY/rQkvxs9OMYBMCcJNn1Qht8suIdU+h5gWkHkdMlWkNGJwsuu81m7MaH8AhThLTma68AKOf5ykME/Fnv2q2aqmjEEvIOK2SwvnVXn0y+38ssrAamts4gI1XFL6eyS816reoC0/oUHZYsSj0+m6JBC1bz4Skgi/eBLyFi9+bq9wwJmS9YSX0axmemm/B0Ms+fRLWqMfpYdKgE6ISKr91921tHpP4iCQIDAQAB
+"
 }
 
