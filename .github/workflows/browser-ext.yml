@@ -1,0 +1,137 @@
+name: browser-ext
+
+on:
+  push:
+    tags:
+      - 'browser-ext-[0-9]*'
+
+# serialize runs so two quick tags can't race on browser-ext-latest
+concurrency:
+  group: browser-ext
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  ASTRO_DIR:  browsing-exp/carbonwarp-surf/
+  LATEST_TAG: browser-ext-latest
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive version from tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#browser-ext-}"
+          if ! [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){0,3}$ ]]; then
+            echo "::error::'$VERSION' is not a valid extension version (1-4 dot-separated integers)"; exit 1
+          fi
+          IFS=. read -ra PARTS <<< "$VERSION"
+          for p in "${PARTS[@]}"; do
+            if (( 10#$p > 65535 )); then echo "::error::version part $p exceeds 65535"; exit 1; fi
+          done
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ env.ASTRO_DIR }}/package-lock.json
+
+      - name: Build Astro
+        working-directory: ${{ env.ASTRO_DIR }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Validate build output
+        working-directory: ${{ env.ASTRO_DIR }}
+        run: |
+          test -f dist/manifest.json || { echo "::error::dist/manifest.json missing (put it in public/)"; exit 1; }
+          test -f dist/index.html    || { echo "::error::dist/index.html missing"; exit 1; }
+          # MV3 CSP blocks inline scripts
+          if grep -rPl '<script(?![^>]*\bsrc=)[^>]*>' dist --include='*.html'; then
+            echo "::error::inline <script> found in the files above"; exit 1
+          fi
+          # names starting with '_' are reserved by Chromium (except _locales)
+          BAD=$(find dist -name '_*' -not -name '_locales' -not -path '*/_locales/*')
+          if [ -n "$BAD" ]; then echo "::error::reserved names in dist:"; echo "$BAD"; exit 1; fi
+
+      - name: Prepare signing key and check it matches the manifest
+        working-directory: ${{ env.ASTRO_DIR }}
+        env:
+          EXT_SIGNING_KEY: ${{ secrets.EXT_SIGNING_KEY }}
+        run: |
+          umask 077
+          printf '%s\n' "$EXT_SIGNING_KEY" > "$RUNNER_TEMP/key.pem"
+          PUB=$(openssl rsa -in "$RUNNER_TEMP/key.pem" -pubout -outform DER 2>/dev/null | openssl base64 -A)
+          MANIFEST_KEY=$(jq -r '.key // empty' dist/manifest.json)
+          if [ "$PUB" != "$MANIFEST_KEY" ]; then
+            echo "::error::manifest 'key' does not match the signing key secret; the extension ID would differ"; exit 1
+          fi
+          ID=$(openssl rsa -in "$RUNNER_TEMP/key.pem" -pubout -outform DER 2>/dev/null | sha256sum | head -c32 | tr '0-9a-f' 'a-p')
+          echo "EXT_ID=$ID" >> "$GITHUB_ENV"
+
+      - name: Stamp version and pack CRX
+        working-directory: ${{ env.ASTRO_DIR }}
+        run: |
+          jq --arg v "$VERSION" '.version = $v' dist/manifest.json > dist/manifest.tmp
+          mv dist/manifest.tmp dist/manifest.json
+          mkdir -p "$GITHUB_WORKSPACE/out/versioned" "$GITHUB_WORKSPACE/out/latest"
+          npx --yes crx3 -p "$RUNNER_TEMP/key.pem" -o "$GITHUB_WORKSPACE/out/browser-ext.crx" dist
+          rm -f "$RUNNER_TEMP/key.pem"
+
+      - name: Generate update.xml (versioned and latest)
+        working-directory: out
+        run: |
+          SHA=$(sha256sum browser-ext.crx | cut -d' ' -f1)
+          BASE="https://github.com/${GITHUB_REPOSITORY}/releases/download"
+          gen() {  # $1 = release tag the codebase points at, $2 = output file
+            cat > "$2" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+            <app appid="${EXT_ID}">
+              <updatecheck codebase="${BASE}/$1/browser-ext.crx" version="${VERSION}" hash_sha256="${SHA}"/>
+            </app>
+          </gupdate>
+          EOF
+            sed -i 's/^          //' "$2"
+          }
+          gen "$TAG"        versioned/update.xml
+          gen "$LATEST_TAG" latest/update.xml
+          cp browser-ext.crx versioned/
+          cp browser-ext.crx latest/
+          cat versioned/update.xml
+
+      - name: Publish versioned release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" out/versioned/browser-ext.crx out/versioned/update.xml \
+            --title "Browser extension $VERSION" \
+            --notes "Extension ID: \`$EXT_ID\`
+          Version: \`$VERSION\`
+          Update URL: https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/update.xml" \
+            --latest=false
+
+      - name: Publish browser-ext-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag -f "$LATEST_TAG" "$GITHUB_SHA"
+          git push -f origin "refs/tags/$LATEST_TAG"
+          NOTES="Rolling channel. Currently $VERSION (from $TAG).
+          Extension ID: \`$EXT_ID\`
+          Update URL: https://github.com/${GITHUB_REPOSITORY}/releases/download/${LATEST_TAG}/update.xml"
+          if gh release view "$LATEST_TAG" >/dev/null 2>&1; then
+            gh release upload "$LATEST_TAG" out/latest/browser-ext.crx out/latest/update.xml --clobber
+            gh release edit "$LATEST_TAG" --title "Browser extension (latest)" --notes "$NOTES" --latest=false
+          else
+            gh release create "$LATEST_TAG" out/latest/browser-ext.crx out/latest/update.xml \
+              --title "Browser extension (latest)" --notes "$NOTES" --latest=false --target "$GITHUB_SHA"
+          fi
