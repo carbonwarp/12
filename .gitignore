@@ -19,6 +19,7 @@ pre_dist
 *.tar.*
 
 node_modules
+.astro
 
 !cosign.pub
 !public.asc
