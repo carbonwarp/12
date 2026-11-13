@@ -1,13 +1,14 @@
-/Containerfile
+
 *.iso
 *.iso-CHECKSUM
 dist
 
 *key*
 *.asc*
+*.private
+*.pem
 
-!cosign.pub
-!public.asc
+AAA-PKG
 
 upstream_bin
 pre_dist
@@ -16,3 +17,8 @@ pre_dist
 *.rpm
 *.deb
 *.tar.*
+
+node_modules
+
+!cosign.pub
+!public.asc
