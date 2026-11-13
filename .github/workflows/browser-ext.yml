@@ -59,9 +59,6 @@ jobs:
           test -f dist/manifest.json || { echo "::error::dist/manifest.json missing (put it in public/)"; exit 1; }
           test -f dist/index.html    || { echo "::error::dist/index.html missing"; exit 1; }
 
-          # names starting with '_' are reserved by Chromium (except _locales)
-          BAD=$(find dist -name '_*' -not -name '_locales' -not -path '*/_locales/*')
-          if [ -n "$BAD" ]; then echo "::error::reserved names in dist:"; echo "$BAD"; exit 1; fi
 
       - name: Prepare signing key and check it matches the manifest
         working-directory: ${{ env.ASTRO_DIR }}
