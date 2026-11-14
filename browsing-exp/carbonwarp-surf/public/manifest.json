@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Carbonwarp Surf",
-  "version": "0.0.1",
+  "version": "0.0.13",
   "description": "New tab page",
+  "minimum_chrome_version": "120",
+
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
