@@ -84,27 +84,28 @@ jobs:
           pnpm dlx crx3 -p "$RUNNER_TEMP/key.pem" -o "$GITHUB_WORKSPACE/out/browser-ext.crx" dist
           rm -f "$RUNNER_TEMP/key.pem"
 
-      - name: Generate update.xml (versioned and latest)
+      - name: Generate update.xml (versioned and latest, local codebase)
         working-directory: out
+        env:
+          LOCAL_CRX: file:///usr/share/carbonwarp-surf/browser-ext.crx
         run: |
           SHA=$(sha256sum browser-ext.crx | cut -d' ' -f1)
-          BASE="https://github.com/${GITHUB_REPOSITORY}/releases/download"
-          gen() {  # $1 = release tag the codebase points at, $2 = output file
-            cat > "$2" <<EOF
+          gen() {  # $1 = output file; codebase is always the local path baked into the image
+            cat > "$1" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
             <app appid="${EXT_ID}">
-              <updatecheck codebase="${BASE}/$1/browser-ext.crx" version="${VERSION}" hash_sha256="${SHA}"/>
+              <updatecheck codebase="${LOCAL_CRX}" version="${VERSION}" hash_sha256="${SHA}"/>
             </app>
           </gupdate>
           EOF
           }
-          gen "$TAG"        versioned/update.xml
-          gen "$LATEST_TAG" latest/update.xml
+          gen versioned/update.xml
+          gen latest/update.xml
           cp browser-ext.crx versioned/
           cp browser-ext.crx latest/
           cat versioned/update.xml
-
+          
       - name: Publish versioned release
         env:
           GH_TOKEN: ${{ github.token }}
