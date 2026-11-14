@@ -1,0 +1,26 @@
+{
+  "HomepageIsNewTabPage": true,
+  "ShowHomeButton": true,
+  "RestoreOnStartup": 5,
+
+  "BraveRewardsDisabled": true,
+  "BraveWalletDisabled": true,
+  "BraveVPNDisabled": true,
+  "BraveAIChatEnabled": false,
+  "BraveNewsDisabled": true,
+  "BraveTalkDisabled": true,
+  "BraveP3AEnabled": false,
+  "BraveStatsPingEnabled": false,
+  "BraveWebDiscoveryEnabled": false,
+
+  "ExtensionSettings": {
+    "bikchadpoommgmndcnnncbclpbnocgeo": {
+      "installation_mode": "force_installed",
+      "update_url": "file:///usr/share/carbonwarp-surf/update.xml",
+      "toolbar_pin": "default_unpinned"
+    }
+  },
+
+  "NTPFooterExtensionAttributionEnabled": false,
+  "NTPFooterManagementNoticeEnabled": false
+}

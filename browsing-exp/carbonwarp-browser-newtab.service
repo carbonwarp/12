@@ -1,0 +1,25 @@
+# Astro inlines scripts into its HTML output with no reliable opt-out.
+# Chromium extension pages cannot execute inline scripts (CSP), so the
+# .crx can't load Astro's output directly. Instead, the .crx points at a
+# local Python HTTP server (started by this systemd unit) that serves
+# the built as a regular web page, sidestepping the extension CSP
+# while keeping the special privilege only .crx has in newtab related context 
+
+[Unit]
+Description=Distro new tab page
+After=network.target
+
+[Service]
+DynamicUser=yes
+ExecStart=/usr/bin/python3 -m http.server 14367 --bind 127.0.0.1 --directory /usr/share/.../newtab
+Restart=always
+RestartSec=1
+
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+MemoryMax=64M
+
+[Install]
+WantedBy=multi-user.target
