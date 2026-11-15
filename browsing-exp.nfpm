@@ -19,6 +19,9 @@ contents:
 
   - src: browsing-exp/carbonwarp.json
     dst: /etc/brave/policies/managed/carbonwarp.json
+    
+  - src: browsing-exp/Local State
+    dst: /etc/skel/.config/BraveSoftware/Brave-Origin/Local State
 
 rpm:
   buildhost: milkyway
