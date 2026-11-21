@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+
+name: carbonwarp-logos
+arch: all
+platform: linux
+version: 1.0.0
+release: 1
+
+maintainer: Carbonwarp <support@carbonwarp.com>
+vendor: Carbonwarp
+homepage: https://carbonwarp.com
+license: GPL-v3
+description: carbonwarp-icons
+
+contents:
+  - src: carbonwarp-logos/etc
+    dst: /etc/
+    type: tree
+
+  - src: carbonwarp-logos/usr/
+    dst: /usr/
+    type: tree
+    
+scripts:
+  postinstall: carbonwarp-logos/post.sh
+  
+rpm:
+  buildhost: milkyway
+  signature:
+    key_file: private.asc
+
+
