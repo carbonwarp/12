@@ -12,6 +12,7 @@ homepage: https://carbonwarp.com
 license: GPL-v3
 description: carbonwarp-icons
 
+
 contents:
   - src: carbonwarp-logos/etc
     dst: /etc/
@@ -21,6 +22,23 @@ contents:
     dst: /usr/
     type: tree
     
+provides:
+  - system-logos
+  - fedora-logos 
+  - redhat-logos
+  
+conflicts:
+  - fedora-logos
+  - fedora-remix-logos
+  - fedora-logos-httpd
+  - fedora-logos-classic
+ 
+replaces:
+  - fedora-logos
+  - fedora-remix-logos
+  - fedora-logos-httpd
+  - fedora-logos-classic
+  
 scripts:
   postinstall: carbonwarp-logos/post.sh
   
