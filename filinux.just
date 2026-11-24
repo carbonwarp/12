@@ -1,9 +1,9 @@
 # Justfile for pulling upstream Filee binaries (x86_64 and arm64)
-# and packaging them with nfpm. Run from the directory containing filee/.
+# and packaging them with nfpm. Run from the directory filinux/.
 
 version  := "2.2.0"
 base_url := "https://github.com/KnifeLemon/Filee/releases/download/v" + version
-workdir  := "filee"
+workdir  := "filinux"
 upstream := workdir + "/upstream_bin"
 dist     := workdir + "/dist"
 
@@ -39,7 +39,7 @@ package arch="x86_64": pull_bin
         EXT_FILE={{workdir}}/filee.py \
         ARCH={{ if arch == "x86_64" { "amd64" } else { arch } }} \
         VERSION={{version}} \
-            nfpm package -p "$fmt" --config filee.nfpm --target {{dist}}/filee-{{arch}}.$fmt; \
+            nfpm package -p "$fmt" --config filinux.nfpm --target {{dist}}/filee-{{arch}}.$fmt; \
     done
     
 package_all: (package "x86_64") (package "arm64")

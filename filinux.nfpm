@@ -1,16 +1,17 @@
-name: cw-filee
+name: filinux
 platform: linux
 arch: ${ARCH}
 version: 1.1.3
 maintainer: Carbonwarp
 homepage: https://carbonwarp.com
 description: Convert everything with ease with a single touch. A modified filee downstream client from Carbonwarp.
-license: MIT
+license: 
 
 depends:
   - nautilus
   - nautilus-extensions
   - nautilus-python
+  - 
 
 contents:
   - src: ${BIN_DIR}/
@@ -26,20 +27,20 @@ contents:
     dst: /usr/share/nautilus-python/extensions/filee.py
     expand: true
     
-  - src: ./filee/settings.json/
+  - src: ./filinux/settings.json/
     dst: /usr/share/carbonwarp/filee/skel/.config/Filee/settings.json
     
-  - src: ./filee/settings.json
+  - src: ./filinux/settings.json
     dst: /etc/skel/.config/Filee/settings.json
     type: config|noreplace
     
 scripts:
-  postinstall: ./filee/post.sh
-  postremove: ./filee/post.sh
+  postinstall: ./filinux/post.sh
+  postremove: ./filinux/post.sh
 
 rpm:
   scripts:
-    posttrans: ./filee/post.sh
+    posttrans: ./filinux/post.sh
   buildhost: milkyway
   signature:
     key_file: private.asc
