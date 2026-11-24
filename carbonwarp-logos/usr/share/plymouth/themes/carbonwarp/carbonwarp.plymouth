@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=carbonwarp
+Description=Carbonwarp boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/carbonwarp
+ScriptFile=/usr/share/plymouth/themes/carbonwarp/carbonwarp.script
