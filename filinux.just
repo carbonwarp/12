@@ -34,12 +34,12 @@ pull_bin:
 package arch="x86_64": pull_bin
     test -f {{workdir}}/filee.py
     mkdir -p {{dist}}
-    for fmt in rpm deb; do \
+    for fmt in rpm deb archlinux; do \
         BIN_DIR={{upstream}}/{{arch}} \
         EXT_FILE={{workdir}}/filee.py \
         ARCH={{ if arch == "x86_64" { "amd64" } else { arch } }} \
         VERSION={{version}} \
-            nfpm package -p "$fmt" --config filinux.nfpm --target {{dist}}/filee-{{arch}}.$fmt; \
+            nfpm package -p "$fmt" --config filinux.nfpm --target {{dist}}/filinux-{{arch}}.$fmt; \
     done
     
 package_all: (package "x86_64") (package "arm64")
