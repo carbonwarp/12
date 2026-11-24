@@ -2,7 +2,7 @@
 set -euo pipefail
 
 dconf update
-mv /etc/favicon_.png /etc/favicon.png
+
 echo "done"
 
 
