@@ -14,9 +14,13 @@ description: carbonwarp-icons
 
 
 contents:
-  - src: carbonwarp-logos/etc
-    dst: /etc/
-    type: tree
+  - src: carbonwarp-logos/etc/dconf/db/gdm.d/90-carbonwarp-logo
+    dst: /etc/dconf/db/gdm.d/90-carbonwarp-logo
+    type: config|noreplace
+    
+  - src: carbonwarp-logos/etc/fastfetch/config.jsonc
+    dst: /etc/fastfetch/config.jsonc
+    type: config|noreplace
 
   - src: carbonwarp-logos/usr/
     dst: /usr/
