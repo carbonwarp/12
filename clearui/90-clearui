@@ -1,15 +1,61 @@
 # at: /etc/dconf/db/local.d/10-carbonwarp-extensions
 # Then: dconf update
-# Sets arcmenu and dash-to-dock with papirus as the icon theme.
 
 [org/gnome/shell]
-enabled-extensions=['arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com',  'transparent-top-bar@zhanghai.me']
+enabled-extensions=[
+	'arcmenu@arcmenu.com', 
+	'dash-to-dock@micxgx.gmail.com',  
+	'transparent-top-bar@zhanghai.me', 
+	'caffeine@patapon.info', 
+	'tilingshell@ferrarodomenico.com',
+	'gtk4-ding@smedius.gitlab.com',
+	
+	]
 
 [org/gnome/desktop/interface]
 icon-theme='Papirus'
 
 [org/gnome/desktop/sound]
 allow-volume-above-100-percent=true
+
+[/org/gnome/shell/extensions/caffeine/]
+cli-toggle=false
+enable-fullscreen=false
+indicator-position-max=1
+toggle-shortcut=['']
+user-enabled=false
+
+[/org/gnome/shell/extensions/gtk4-ding/]
+add-volumes-opposite=false
+dark-text-in-labels=false
+free-position-icons=false
+icon-size='standard'
+show-desktop-widgets=false
+show-home=true
+show-link-emblem=true
+show-network-volumes=false
+show-second-monitor=false
+show-trash=true
+show-volumes=true
+
+[/org/gnome/shell/extensions/tilingshell/]
+cycle-layouts-backward=['<Shift>']
+edge-tiling-mode='default'
+enable-blur-snap-assistant=false
+enable-smart-window-border-radius=true
+enable-window-border=false
+inner-gaps=uint32 4
+last-version-name-installed='18.0'
+layouts-json='[{"id":"Layout 1","tiles":[{"x":0,"y":0,"width":0.22,"height":0.5,"groups":[1,2]},{"x":0,"y":0.5,"width":0.22,"height":0.5,"groups":[1,2]},{"x":0.22,"y":0,"width":0.56,"height":1,"groups":[2,3]},{"x":0.78,"y":0,"width":0.22,"height":0.5,"groups":[3,4]},{"x":0.78,"y":0.5,"width":0.22,"height":0.5,"groups":[3,4]}]},{"id":"Layout 2","tiles":[{"x":0,"y":0,"width":0.22,"height":1,"groups":[1]},{"x":0.22,"y":0,"width":0.56,"height":1,"groups":[1,2]},{"x":0.78,"y":0,"width":0.22,"height":1,"groups":[2]}]},{"id":"Layout 3","tiles":[{"x":0,"y":0,"width":0.33,"height":1,"groups":[1]},{"x":0.33,"y":0,"width":0.67,"height":1,"groups":[1]}]},{"id":"Layout 4","tiles":[{"x":0,"y":0,"width":0.67,"height":1,"groups":[1]},{"x":0.67,"y":0,"width":0.33,"height":1,"groups":[1]}]}]'
+outer-gaps=uint32 10
+overridden-settings="{\"org.gnome.mutter.keybindings\":{\"toggle-tiled-right\":\"['<Super>Right']\",\"toggle-tiled-left\":\"['<Super>Left']\"},\"org.gnome.desktop.wm.keybindings\":{\"maximize\":\"['<Super>Up']\",\"unmaximize\":\"['<Super>Down', '<Alt>F5']\"},\"org.gnome.mutter\":{\"edge-tiling\":\"true\"}}"
+selected-layouts=[['Layout 1'], ['Layout 1'], ['Layout 1'], ['Layout 1']]
+show-indicator=false
+window-use-custom-border-color=false
+
+
+
+
 
 [org/gnome/shell/extensions/arcmenu]
 activate-on-hover=false
