@@ -1,4 +1,4 @@
-# at: /etc/dconf/db/local.d/10-carbonwarp-extensions
+# at: /etc/dconf/db/local.d/90-clearui
 # Then: dconf update
 
 [org/gnome/shell]
@@ -11,14 +11,14 @@ icon-theme='Papirus'
 [org/gnome/desktop/sound]
 allow-volume-above-100-percent=true
 
-[org/gnome/shell/extensions/caffeine/]
+[org/gnome/shell/extensions/caffeine]
 cli-toggle=false
 enable-fullscreen=false
 indicator-position-max=1
 toggle-shortcut=['']
 user-enabled=false
 
-[org/gnome/shell/extensions/gtk4-ding/]
+[org/gnome/shell/extensions/gtk4-ding]
 add-volumes-opposite=false
 dark-text-in-labels=false
 free-position-icons=false
@@ -31,7 +31,7 @@ show-second-monitor=false
 show-trash=true
 show-volumes=true
 
-[org/gnome/shell/extensions/tilingshell/]
+[org/gnome/shell/extensions/tilingshell]
 cycle-layouts-backward=['<Shift>']
 edge-tiling-mode='default'
 enable-blur-snap-assistant=false
